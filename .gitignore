@@ -1,4 +1,4 @@
 *~
 *.swp
 .DS_Store
-conf.d/
+conf.d/*.conf
