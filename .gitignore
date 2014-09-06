@@ -2,3 +2,4 @@
 *.swp
 .DS_Store
 conf.d/*.conf
+patterns/*.conf
