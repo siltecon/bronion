@@ -1,1 +1,2 @@
-#Link policy files here
+#Link policy cofiguration files here
+# ln -s ../policy/<configuration> .
