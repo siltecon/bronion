@@ -1,0 +1,1 @@
+logstash will access conf.d by default to pull in all of its inputs, filters, and outputs.  It is recommended that you use the policy directory to store your files and put symlinks to the files in conf.d.  That makes it easy to add the specific files that you want to add and it makes it easy to add and remove files without deleting something you want to keep.
