@@ -33,7 +33,7 @@ log {
 Then proceed to build your configuration on the host that is running logstash
 
 ```shell
-cd /etc/logstash
+cd /etc/logstash/conf.d/
 ln -s policy/10_input-udp-5514.conf conf.d/10_input-udp-5514.conf
 ln -s policy/20_filter-preprocessor-bro.conf conf.d/20_filter-preprocessor-bro.conf
 ln -s policy/21_filter-bro-conn.conf conf.d/policy/21_filter-bro-conn.conf
