@@ -11,7 +11,7 @@
 # tell elastic search to not analyze with logstash.
 
 # the best way to use this file is to resave without the comments and then use the command
-# curl -XPUT localhost:9200/_template/template_1 -d @mappings.json
+# curl -XPUT localhost:9200/_template/template_1 -d @mapping.json
 # where template_1 is the name of your template 
 {	
 		"template" : "logstash*",
