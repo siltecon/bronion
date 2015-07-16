@@ -1,10 +1,6 @@
 # Windows Event Logs
 
-***
-
 ## Import Windows Event Logs from a Log Collector into Logstash
-
-***
 
 The files in this folder are intended to allow you to import Windows Event Logs from a Windows Event Log Collector.  This file will not teach you how to set up a Windows Log Collector, however you can access the NSA's document on how to do so [here](https://www.nsa.gov/ia/_files/app/spotting_the_adversary_with_windows_event_log_monitoring.pdf)
 
