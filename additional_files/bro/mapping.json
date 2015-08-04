@@ -32,7 +32,8 @@
 					sensor_name : {"type" : "string","index" : "not_analyzed"},
 					server_name : {"type" : "string","index" : "not_analyzed"},
 					software_type : {"type" : "string","index" : "not_analyzed"},
-					user_agent : {"type" : "string","index" : "not_analyzed"}
+					user_agent : {"type" : "string","index" : "not_analyzed"},
+					ts : {"type" : "date"}
 						}
 					}
 			}
