@@ -1,4 +1,7 @@
 # bronion
+## My Guide to deploying ELK as an Incident Response Tool
+[Do you even ELK, Bro?](https://docs.google.com/document/d/1LM6Fy-yDajvuwMEw9yavU37nrEliXtjsdo0rGBUTjAo/pub)
+
 ## Import Bro logs from SecurityOnion into Logstash
 
 The files in this repo are intended to create a modular workflow that is easy to modify and debug.  The normal logstash data pipeline consists of *input->filter->output*. Normally all filters, inputs, and outputs  are connected unless you control the message routing with tags.
