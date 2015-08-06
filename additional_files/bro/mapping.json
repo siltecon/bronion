@@ -20,7 +20,6 @@
 				BroLogs : {
 				Properties : {
 					dst_ip : {"type" : "ip"},
-					geoip.ip : {"type" : "ip"},
 					tx_hosts : {"type" : "ip"},
 					dst_port : {"type" : "string","index" : "not_analyzed"},
 					src_ip : {"type" : "ip"},
