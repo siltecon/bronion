@@ -19,9 +19,11 @@
 			{
 				BroLogs : {
 				Properties : {
-					dst_ip : {"type" : "string","index" : "not_analyzed"},
+					dst_ip : {"type" : "ip"},
+					geoip.ip : {"type" : "ip"},
+					tx_hosts : {"type" : "ip"},
 					dst_port : {"type" : "string","index" : "not_analyzed"},
-					src_ip : {"type" : "string","index" : "not_analyzed"},
+					src_ip : {"type" : "ip"},
 					src_port : {"type" : "string","index" : "not_analyzed"},
 					dst_mime_types : {"type" : "string","index" : "not_analyzed"},
 					src_mime_types : {"type" : "string","index" : "not_analyzed"},
