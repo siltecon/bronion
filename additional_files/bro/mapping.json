@@ -17,7 +17,7 @@
 		"template" : "logstash*",
 		"mappings" :
 			{
-				BroLogs : {
+				bro : {
 				Properties : {
 					dst_ip : {"type" : "ip"},
 					tx_hosts : {"type" : "ip"},
