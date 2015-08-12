@@ -1,18 +1,16 @@
 # bronion
+## My Guide to deploying ELK as an Incident Response Tool
+[Do you even ELK, Bro?](https://docs.google.com/document/d/1LM6Fy-yDajvuwMEw9yavU37nrEliXtjsdo0rGBUTjAo/pub)
+
 ## Import Bro logs from SecurityOnion into Logstash
 
-The files in this repo are intended to create a modular workflow that is easy to modify and debug.
-The normal logstash data pipeline consists of *input->filter->output*. Normally all filters, inputs, and outputs
-are connected unless you control the message routing with tags.
+The files in this repo are intended to create a modular workflow that is easy to modify and debug.  The normal logstash data pipeline consists of *input->filter->output*. Normally all filters, inputs, and outputs  are connected unless you control the message routing with tags.
 
-Clone the repo into your logstash config directory and build your configuration from softlinks. To create a workflow
-you need to have an input, output, filter, and output. It uses the same idea Debian has for Apache configuration
+Clone the repo into your logstash config directory (*/etc/logstash*) and build your configuration from softlinks. To create a workflow you need to have an input, filter, and output. It uses the same idea Debian has for Apache configuration.
 
-Since Bro has many different file types, a partial match is done to classify the Bro log type (20_filter-preprocessor-bro.conf). This partial match is used then to process the
-log with an appropiate filter
+Since Bro has many different file types, a partial match is done to classify the Bro log type (*20_filter-preprocessor-bro.conf*). This partial match is used then to process the log with an appropiate filter.
 
-The postprocessor filter deletes any entry with the *_grokparsefailure* tag. 
-If you are debugging or developing new filters delete this postprocessor temporarly
+The postprocessor filter deletes any entry with the *_grokparsefailure* tag.  If you are debugging or developing new filters delete this postprocessor temporarly.  If you do this, then (*30_output-elasticsearch.conf*) will send debugging output to the default logstash log directory (*/var/log/logstash*) with the name *YYYY-MM-dd-BRO.err*
 
 ---
 
@@ -25,7 +23,6 @@ in the sensor that has the logs you want to ingest. The destination IP address i
 destination d_bronion { udp("1.2.3.4" port("5514"));};
 log {
   source(s_bro_conn);
-  rewrite(r_pipes);
   destination(d_bronion);
 };
 ```
@@ -33,11 +30,13 @@ log {
 Then proceed to build your configuration on the host that is running logstash
 
 ```shell
-cd /etc/logstash/conf.d/
-ln -s policy/10_input-udp-5514.conf conf.d/10_input-udp-5514.conf
-ln -s policy/20_filter-preprocessor-bro.conf conf.d/20_filter-preprocessor-bro.conf
-ln -s policy/21_filter-bro-conn.conf conf.d/policy/21_filter-bro-conn.conf
-ln -s policy/29_filter-postprocessor-bro.conf conf.d/29_filter-postprocessor-bro.conf
-ln -s policy/30_output-elasticsearch.conf conf.d/30_output-elasticsearch.conf
+cd /etc/logstash
+ln -s policy/bro/10_input-udp-5514.conf conf.d/10_input-udp-5514.conf
+ln -s policy/bro/23_filter-garbage-bro.conf
+ln -s policy/bro/20_filter-preprocessor-bro.conf conf.d/20_filter-preprocessor-bro.conf
+ln -s policy/bro/25_filter-bro-conn.conf conf.d/policy/21_filter-bro-conn.conf
+ln -s policy/bro/27_filter-convertprocessor-bro.conf
+ln -s policy/bro/28_filter-postprocessor-bro.conf conf.d/29_filter-postprocessor-bro.conf
+ln -s policy/bro/30_output-elasticsearch.conf conf.d/30_output-elasticsearch.conf
 service logstash restart
 ```
