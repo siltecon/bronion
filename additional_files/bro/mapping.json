@@ -1,0 +1,41 @@
+# This file gives you the elasticsearch index template to use to ensure that your brolog entry strings
+# aren't parsed into tokens.  This means you cannot expect to quickly search for sub parts of the strings
+# listed below.  It also means that weird things won't happen (like mime_type of application/x-tar
+# being tokenized into 'application' 'x' 'tar' or IPV6 address being tokenized into 8 tokens.
+
+# NOTE: you should apply this prior to starting to enter data.  Recommend creating an index that matches the 
+# template regex below to make sure you don't get an error.  If you do something is wrong below.
+
+# mime_type and filename have been tested, last time I used logstash to convert variables to integers
+# which worked just fine.  I would recommend doing that whenever possible, though I don't think you can
+# tell elastic search to not analyze with logstash.
+
+# the best way to use this file is to resave without the comments and then use the command
+# curl -XPUT localhost:9200/_template/template_1 -d @mappings.json
+# where template_1 is the name of your template 
+{	
+		"template" : "logstash*",
+		"mappings" :
+			{
+				bro : {
+				Properties : {
+					dst_ip : {"type" : "ip"},
+					tx_hosts : {"type" : "ip"},
+					dst_port : {"type" : "string","index" : "not_analyzed"},
+					src_ip : {"type" : "ip"},
+					src_port : {"type" : "string","index" : "not_analyzed"},
+					dst_mime_types : {"type" : "string","index" : "not_analyzed"},
+					src_mime_types : {"type" : "string","index" : "not_analyzed"},
+					mime_type : {"type" : "string","index" : "not_analyzed"},
+					file_name : {"type" : "string","index" : "not_analyzed"},
+					file_mime_type : {"type" : "string","index" : "not_analyzed"},
+					host : {"type" : "string","index" : "not_analyzed"},
+					sensor_name : {"type" : "string","index" : "not_analyzed"},
+					server_name : {"type" : "string","index" : "not_analyzed"},
+					software_type : {"type" : "string","index" : "not_analyzed"},
+					user_agent : {"type" : "string","index" : "not_analyzed"},
+					ts : {"type" : "date"}
+						}
+					}
+			}
+}	    
