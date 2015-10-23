@@ -1,0 +1,807 @@
+################################################################################
+# Copyright 2014-2015 Jose Ortiz
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# Notes:
+#   The translate filter is not installed by default.
+#   Install the plugin: bin/plugin install logstash-filter-translate
+#
+################################################################################
+input {
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/app_stats.log" ]
+    sincedb_path => "/var/tmp/.bro_appstats_sincedb"
+    start_position => "end"
+    tags => [ "bro_app_stats" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/communication.log" ]
+    sincedb_path => "/var/tmp/.bro_communication_sincedb"
+    start_position => "end"
+    tags => [ "bro_communication" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/conn.log" ]
+    sincedb_path => "/var/tmp/.bro_conn_sincedb"
+    start_position => "end"
+    tags => [ "bro_conn" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/dhcp.log" ]
+    sincedb_path => "/var/tmp/.bro_dhcp_sincedb"
+    start_position => "end"
+    tags => [ "bro_dhcp" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/dnp3.log" ]
+    sincedb_path => "/var/tmp/.bro_dnp3_sincedb"
+    start_position => "end"
+    tags => [ "bro_dnp3" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/dns.log" ]
+    sincedb_path => "/var/tmp/.bro_dns_sincedb"
+    start_position => "end"
+    tags => [ "bro_dns" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/dpd.log" ]
+    sincedb_path => "/var/tmp/.bro_dpd_sincedb"
+    start_position => "end"
+    tags => [ "bro_dpd" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/files.log" ]
+    sincedb_path => "/var/tmp/.bro_files_sincedb"
+    start_position => "end"
+    tags => [ "bro_files" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/ftp.log" ]
+    sincedb_path => "/var/tmp/.bro_ftp_sincedb"
+    start_position => "end"
+    tags => [ "bro_ftp" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/http.log" ]
+    sincedb_path => "/var/tmp/.bro_http_sincedb"
+    start_position => "end"
+    tags => [ "bro_http" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/intel.log" ]
+    sincedb_path => "/var/tmp/.bro_intel_sincedb"
+    start_position => "end"
+    tags => [ "bro_intel" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/irc.log" ]
+    sincedb_path => "/var/tmp/.bro_irc_sincedb"
+    start_position => "end"
+    tags => [ "bro_irc" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/known_certs.log" ]
+    sincedb_path => "/var/tmp/.bro_knowncerts_sincedb"
+    start_position => "end"
+    tags => [ "bro_known_certs" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/known_hosts.log" ]
+    sincedb_path => "/var/tmp/.bro_knownhosts_sincedb"
+    start_position => "end"
+    tags => [ "bro_known_hosts" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/known_services.log" ]
+    sincedb_path => "/var/tmp/.bro_knownservices_sincedb"
+    start_position => "end"
+    tags => [ "bro_known_services" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/modbus.log" ]
+    sincedb_path => "/var/tmp/.bro_modbus_sincedb"
+    start_position => "end"
+    tags => [ "bro_modbus" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/notice.log" ]
+    sincedb_path => "/var/tmp/.bro_notice_sincedb"
+    start_position => "end"
+    tags => [ "bro_notice" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/pe.log" ]
+    sincedb_path => "/var/tmp/.bro_pe_sincedb"
+    start_position => "end"
+    tags => [ "bro_pe" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/radius.log" ]
+    sincedb_path => "/var/tmp/.bro_radius_sincedb"
+    start_position => "end"
+    tags => [ "bro_radius" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/reporter.log" ]
+    sincedb_path => "/var/tmp/.bro_reporter_sincedb"
+    start_position => "end"
+    tags => [ "bro_reporter" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/signatures.log" ]
+    sincedb_path => "/var/tmp/.bro_signatures_sincedb"
+    start_position => "end"
+    tags => [ "bro_signatures" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/smtp.log" ]
+    sincedb_path => "/var/tmp/.bro_smtp_sincedb"
+    start_position => "end"
+    tags => [ "bro_smtp" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/snmp.log" ]
+    sincedb_path => "/var/tmp/.bro_snmp_sincedb"
+    start_position => "end"
+    tags => [ "bro_snmp" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/socks.log" ]
+    sincedb_path => "/var/tmp/.bro_socks_sincedb"
+    start_position => "end"
+    tags => [ "bro_socks" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/software.log" ]
+    sincedb_path => "/var/tmp/.bro_software_sincedb"
+    start_position => "end"
+    tags => [ "bro_software" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/ssh.log" ]
+    sincedb_path => "/var/tmp/.bro_ssh_sincedb"
+    start_position => "end"
+    tags => [ "bro_ssh" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/ssl.log" ]
+    sincedb_path => "/var/tmp/.bro_ssl_sincedb"
+    start_position => "end"
+    tags => [ "bro_ssl" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/syslog.log" ]
+    sincedb_path => "/var/tmp/.bro_syslog_sincedb"
+    start_position => "end"
+    tags => [ "bro_syslog" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/traceroute.log" ]
+    sincedb_path => "/var/tmp/.bro_traceroute_sincedb"
+    start_position => "end"
+    tags => [ "bro_traceroute" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/tunnel.log" ]
+    sincedb_path => "/var/tmp/.bro_tunnel_sincedb"
+    start_position => "end"
+    tags => [ "bro_tunnel" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/weird.log" ]
+    sincedb_path => "/var/tmp/.bro_weird_sincedb"
+    start_position => "end"
+    tags => [ "bro_weird" ]
+  }
+
+  file {
+    type => "bro"
+    path => [ "/usr/local/bro/logs/current/x509.log" ]
+    sincedb_path => "/var/tmp/.bro_x509_sincedb"
+    start_position => "end"
+    tags => [ "bro_x509" ]
+  }
+
+}
+
+filter {
+  if [message] =~ /^#/ {
+    drop { }
+  } #end if
+
+  ####begin bro_app_stats####
+  if "bro_app_stats" in [tags] {
+    csv {
+      columns => ["ts","ts_delta","app","uniq_hosts","hits","bytes"]
+      separator => "	"
+    } #end csv
+    date {
+      match => [ "ts", "UNIX" ]
+      add_tag => [ "tsmatch" ]
+    } #end date
+    if [id.orig_h] == "string" or [id.orig_h] == "uid" {
+      drop {}
+    } #get rid of strange records when file rotation occurs
+  } ####end bro_app_stats####
+
+  ####begin bro_communication####
+  if "bro_communication" in [tags] {
+    csv {
+      columns => ["ts","peer","src_name","connected_peer_desc","connected_peer_addr","connected_peer_port","level","message"]
+      separator => "	"
+    } #end csv
+    date {
+      match => [ "ts", "UNIX" ]
+      add_tag => [ "tsmatch" ]
+    } #end date
+    if [id.orig_h] == "string" or [id.orig_h] == "uid" {
+      drop {}
+    } #get rid of strange records when file rotation occurs
+  } ####end bro_communication####
+
+  ####begin bro_conn####
+  if "bro_conn" in [tags] {
+    csv {
+      columns => ["ts","uid","id.orig_h","id.orig_p","id.resp_h","id.resp_p","proto","service","duration","orig_bytes","resp_bytes","conn_state","local_orig","local_resp","missed_bytes","history","orig_pkts","orig_ip_bytes","resp_pkts","resp_ip_bytes","tunnel_parents"]
+      separator => "	"
+    } #end csv
+    translate {
+      field => "conn_state"
+      destination => "conn_state_full"
+      dictionary => [
+        "S0", "Connection attempt seen, no reply",
+        "S1", "Connection established, not terminated",
+        "S2", "Connection established and close attempt by originator seen (but no reply from responder)",
+        "S3", "Connection established and close attempt by responder seen (but no reply from originator)",
+        "SF", "Normal SYN/FIN completion",
+        "REJ", "Connection attempt rejected",
+        "RSTO", "Connection established, originator aborted (sent a RST)",
+        "RSTR", "Established, responder aborted",
+        "RSTOS0", "Originator sent a SYN followed by a RST, we never saw a SYN-ACK from the responder",
+        "RSTRH", "Responder sent a SYN ACK followed by a RST, we never saw a SYN from the (purported) originator",
+        "SH", "Originator sent a SYN followed by a FIN, we never saw a SYN ACK from the responder (hence the connection was 'half' open)",
+        "SHR", "Responder sent a SYN ACK followed by a FIN, we never saw a SYN from the originator",
+        "OTH", "No SYN seen, just midstream traffic (a 'partial' connection that was not later closed)"
+      ]
+      add_tag => [ "translated" ]
+    } #end translate
+    geoip {
+      source => "id.orig_h"
+      add_tag => [ "geoip_orig" ]
+    } #end geoip orig
+    geoip {
+      source => "id.resp_h"
+      add_tag => [ "geoip_resp" ]
+    } #end geoip resp
+    date {
+      match => [ "ts", "UNIX" ]
+      add_tag => [ "tsmatch" ]
+    } #end date
+    if [id.orig_h] == "string" or [id.orig_h] == "uid" {
+      drop {}
+    } #get rid of strange records when file rotation occurs
+  } ####end bro_conn####
+
+  ####begin bro_dhcp####
+  if "bro_dhcp" in [tags] {
+    csv {
+      columns => ["ts","uid","id.orig_h","id.orig_p","id.resp_h","id.resp_p","mac","assigned_ip","lease_time","trans_id"]
+      separator => "	"
+    } #end csv
+    date {
+      match => [ "ts", "UNIX" ]
+      add_tag => [ "tsmatch" ]
+    } #end date
+    if [id.orig_h] == "string" or [id.orig_h] == "uid" {
+      drop {}
+    } #get rid of strange records when file rotation occurs
+  } ####end bro_dhcp####
+
+  ####begin bro_dnp3####
+  if "bro_dnp3" in [tags] {
+    csv {
+      columns => ["ts","uid","id","fc_request","fc_reply","iin"]
+      separator => "	"
+    } #end csv
+    date {
+      match => [ "ts", "UNIX" ]
+      add_tag => [ "tsmatch" ]
+    } #end date
+    if [id.orig_h] == "string" or [id.orig_h] == "uid" {
+      drop {}
+    } #get rid of strange records when file rotation occurs
+  } ####end bro_dnp3####
+
+  ####begin bro_dns####
+  if "bro_dns" in [tags] {
+    csv {
+      columns => ["ts","uid","id.orig_h","id.orig_p","id.resp_h","id.resp_p","proto","trans_id","query","qclass","qclass_name","qtype","qtype_name","rcode","rcode_name","AA","TC","RD","RA","Z","answers","TTLs","rejected"]
+      separator => "	"
+    } #end csv
+    geoip {
+      source => "id.orig_h"
+      add_tag => [ "geoip_orig" ]
+    } #end geoip orig
+    geoip {
+      source => "id.resp_h"
+      add_tag => [ "geoip_resp" ]
+    } #end geoip resp
+    date {
+      match => [ "ts", "UNIX" ]
+      add_tag => [ "tsmatch" ]
+    } #end date
+    if [id.orig_h] == "string" or [id.orig_h] == "uid" {
+      drop {}
+    } #get rid of strange records when file rotation occurs
+  } ####end bro_dns####
+
+  ####begin bro_dpd####
+  if "bro_dpd" in [tags] {
+    csv {
+      columns => ["ts","uid","id.orig_h","id.orig_p","id.resp_h","id.resp_p","proto","analyzer","failure_reason"]
+      separator => "	"
+    } #end csv
+    geoip {
+      source => "id.orig_h"
+      add_tag => [ "geoip_orig" ]
+    } #end geoip orig
+    geoip {
+      source => "id.resp_h"
+      add_tag => [ "geoip_resp" ]
+    } #end geoip resp
+    date {
+      match => [ "ts", "UNIX" ]
+      add_tag => [ "tsmatch" ]
+    } #end date
+    if [id.orig_h] == "string" or [id.orig_h] == "uid" {
+      drop {}
+    } #get rid of strange records when file rotation occurs
+  } ####end bro_dpd####
+
+  ####begin bro_files####
+  if "bro_files" in [tags] {
+    csv {
+      columns => ["ts","fuid","tx_hosts","rx_hosts","conn_uids","source","depth","analyzers","mime_type","filename","duration","local_orig","is_orig","seen_bytes","total_bytes","missing_bytes","overflow_bytes","timedout","parent_fuid","md5","sha1","sha256","extracted"]
+      separator => "	"
+    } #end csv
+    date {
+      match => [ "ts", "UNIX" ]
+      add_tag => [ "tsmatch" ]
+    } #end date
+    if [md5] == "string" or [md5] == "uid" {
+      drop {}
+    } #get rid of strange records when file rotation occurs
+  } ####end bro_files####
+
+  ####begin bro_ftp####
+  if "bro_ftp" in [tags] {
+    csv {
+      columns => ["ts","uid","id","user","password","command","arg","mime_type","file_size","reply_code","reply_msg","data_channel","fuid"]
+      separator => "	"
+    } #end csv
+    date {
+      match => [ "ts", "UNIX" ]
+      add_tag => [ "tsmatch" ]
+    } #end date
+    if [uid] == "ts" or [uid] == "time" {
+      drop {}
+    } #get rid of strange records when file rotation occurs
+  } ####end bro_ftp####
+
+  ####begin bro_http####
+  if "bro_http" in [tags] {
+    csv {
+      columns => ["ts","uid","id.orig_h","id.orig_p","id.resp_h","id.resp_p","trans_depth","method","host","uri","referrer","user_agent","request_body_len","response_body_len","status_code","status_msg","info_code","info_msg","filename","http.tags","username","password","proxied","orig_fuids","orig_mime_types","resp_fuids","resp_mime_types"]
+      separator => "	"
+    } #end csv
+    geoip {
+      source => "id.orig_h"
+      add_tag => [ "geoip_orig" ]
+    } #end geoip orig
+    geoip {
+      source => "id.resp_h"
+      add_tag => [ "geoip_resp" ]
+    } #end geoip resp
+    date {
+      match => [ "ts", "UNIX" ]
+      add_tag => [ "tsmatch" ]
+    } #end date
+    if [id.orig_h] == "string" or [id.orig_h] == "uid" {
+      drop {}
+    } #get rid of strange records when file rotation occurs
+  } ####end bro_http####
+
+  ####begin bro_intel####
+  if "bro_intel" in [tags] {
+    csv {
+      columns => ["ts","uid","id","fuid","file_mime_type","file_desc","seen.indicator","seen.indicator_type","seen.where","sources"]
+      separator => "	"
+    } #end csv
+    date {
+      match => [ "ts", "UNIX" ]
+      add_tag => [ "tsmatch" ]
+    } #end date
+   if [id.orig_h] == "string" or [id.orig_h] == "uid" {
+     drop {}
+   } #get rid of strange records when file rotation occurs
+ } ####end bro_intel####
+
+ ####begin bro_irc####
+ if "bro_irc" in [tags] {
+    csv {
+      columns => ["ts","uid","id","nick","user","command","value","addl","dcc_file_name","dcc_file_size","dcc_mime_type","fuid"]
+      separator => "	"
+    } #end csv
+    date {
+      match => [ "ts", "UNIX" ]
+      add_tag => [ "tsmatch" ]
+    } #end date
+   if [id.orig_h] == "string" or [id.orig_h] == "uid" {
+     drop {}
+   } #get rid of strange records when file rotation occurs
+ } ####end bro_irc####
+
+ ####begin bro_known_certs####
+ if "bro_known_certs" in [tags] {
+    csv {
+      columns => ["ts","host","port_num","subject","issuer_subject","serial"]
+      separator => "	"
+    } #end csv
+    date {
+      match => [ "ts", "UNIX" ]
+      add_tag => [ "tsmatch" ]
+    } #end date
+   if [id.orig_h] == "string" or [id.orig_h] == "uid" {
+     drop {}
+   } #get rid of strange records when file rotation occurs
+ } ####end bro_known_certs####
+
+ ####begin bro_known_hosts####
+ if "bro_known_hosts" in [tags] {
+    csv {
+      columns => ["ts","host"]
+      separator => "	"
+    } #end csv
+    date {
+      match => [ "ts", "UNIX" ]
+      add_tag => [ "tsmatch" ]
+    } #end date
+   if [id.orig_h] == "string" or [id.orig_h] == "uid" {
+     drop {}
+   } #get rid of strange records when file rotation occurs
+ } ####end bro_known_hosts####
+
+ ####begin bro_known_services
+ if "bro_known_services" in [tags] {
+    csv {
+      columns => ["ts","host","port_num","port_proto","service"]
+      separator => "	"
+    } #end csv
+    date {
+      match => [ "ts", "UNIX" ]
+      add_tag => [ "tsmatch" ]
+    } #end date
+   if [id.orig_h] == "string" or [id.orig_h] == "uid" {
+     drop {}
+   } #get rid of strange records when file rotation occurs
+ } ####end bro_known_services####
+
+ ####begin bro_modbus####
+ if "bro_modbus" in [tags] {
+    csv {
+      columns => ["ts","uid","id","func","exception"]
+      separator => "	"
+    } #end csv
+    date {
+      match => [ "ts", "UNIX" ]
+      add_tag => [ "tsmatch" ]
+    } #end date
+  if [id.orig_h] == "string" or [id.orig_h] == "uid" {
+    drop {}
+    } #get rid of strange records when file rotation occurs
+  } ####end bro_modbus####
+
+  ####begin bro_notice####
+  if "bro_notice" in [tags] {
+    csv {
+      columns => ["ts","uid","id.orig_h","id.orig_p","id.resp_h","id.resp_p","fuid","file_mime_type","file_desc","proto","note","msg","sub","src","dst","p","n","peer_descr","actions","suppress_for","dropped","remote_location.country_code","remote_location.region","remote_location.city","remote_location.latitude","remote_location.longitude"]
+      separator => "	"
+    } #end csv
+    date {
+      match => [ "ts", "UNIX" ]
+      add_tag => [ "tsmatch" ]
+    } #end date
+    if [id.orig_h] == "string" or [id.orig_h] == "uid" {
+      drop {}
+    } #get rid of strange records when file rotation occurs
+  } ####end bro_notice####
+
+  ####begin bro_pe####
+  if "bro_pe" in [tags] {
+    csv {
+      columns => ["ts","id","machine","compile_ts","os","subsystem","is_exe","is_64bit","uses_aslr","uses_dep","uses_code_integrity","uses_seh","has_import_table"]
+      separator => "	"
+    } #end csv
+    date {
+      match => [ "ts", "UNIX" ]
+      add_tag => [ "tsmatch" ]
+    } #end date
+    if [machine] == "string" {
+      drop {}
+    } #get rid of strange records when file rotation occurs
+  } ####end bro_pe####
+
+  ####begin bro_radius####
+  if "bro_radius" in [tags] {
+    csv {
+      columns => ["ts","uid","id","username","mac","remote_ip","connect_info","result","logged"]
+      separator => "	"
+    } #end csv
+    date {
+      match => [ "ts", "UNIX" ]
+      add_tag => [ "tsmatch" ]
+    } #end date
+    if [id.orig_h] == "string" or [id.orig_h] == "uid" {
+      drop {}
+    } #get rid of strange records when file rotation occurs
+  } ####end bro_radius####
+
+  ####begin bro_reporter####
+  if "bro_reporter" in [tags] {
+    csv {
+      columns => ["ts","level","message","location"]
+      separator => "	"
+    } #end csv
+    date {
+      match => [ "ts", "UNIX" ]
+      add_tag => [ "tsmatch" ]
+    } #end date
+    if [id.orig_h] == "string" or [id.orig_h] == "uid" {
+      drop {}
+    } #get rid of strange records when file rotation occurs
+  } ####end bro_reporter####
+
+  ####begin bro_signatures####
+  if "bro_signatures" in [tags] {
+    csv {
+      columns => ["ts","src_addr","src_port","dst_addr","dst_port","note","sig_id","event_msg","sub_msg","sig_count","host_count"]
+      separator => "	"
+    } #end csv
+    date {
+      match => [ "ts", "UNIX" ]
+      add_tag => [ "tsmatch" ]
+    } #end date
+    if [id.orig_h] == "string" or [id.orig_h] == "uid" {
+      drop {}
+    } #get rid of strange records when file rotation occurs
+  } ####end bro_signatures####
+
+  ####begin bro_smtp####
+  if "bro_smtp" in [tags] {
+    csv {
+      columns => ["change_me"]
+      separator => "	"
+    } #end csv
+    date {
+      match => [ "ts", "UNIX" ]
+      add_tag => [ "tsmatch" ]
+    } #end date
+    if [uid] == "ts" or [uid] == "string" {
+      drop {}
+    } # get rid of strange records when file rotation occurs
+  } ####end bro_smtp####
+
+  ####begin bro_snmp####
+  if "bro_snmp" in [tags] {
+    csv {
+      columns => ["change_me"]
+      separator => "	"
+    } #end csv
+    if [id.orig_h] == "string" or [id.orig_h] == "uid" {
+      drop {}
+    } #get rid of strange records when file rotation occurs
+  } ####end bro_snmp
+
+  ####begin bro_socks####
+  if "bro_socks" in [tags] {
+    csv {
+      columns => ["change_me"]
+      separator => "	"
+    } #end csv
+    if [id.orig_h] == "string" or [id.orig_h] == "uid" {
+      drop {}
+    } #get rid of strange records when file rotation occurs
+ } ####begin bro_socks####
+
+ ####begin bro_software####
+ if "bro_software" in [tags] {
+    csv {
+      columns => ["change_me"]
+      separator => "	"
+    } #end csv
+   if [host_p] == "addr" or [host_p] == "host" {
+     drop {}
+   } #get rid of strange records when file rotation occurs
+ } ####end bro_software####
+
+ ####begin bro_ssh####
+ if "bro_ssh" in [tags] {
+    csv {
+      columns => ["change_me"]
+      separator => "	"
+    } #end csv
+    geoip {
+      source => "id.orig_h"
+      add_tag => [ "geoip_orig" ]
+    } #end geoip orig
+    geoip {
+      source => "id.resp_h"
+      add_tag => [ "geoip_resp" ]
+    } #end geoip resp
+   if [id.orig_h] == "string" or [id.orig_h] == "uid" {
+     drop {}
+   } #get rid of strange records when file rotation occurs
+ } ####end bro_ssh####
+
+  ####begin bro_ssl####
+  if "bro_ssl" in [tags] {
+    csv {
+      columns => ["ts","uid","id.orig_h","id.orig_p","id.resp_h","id.resp_p","version","cipher","curve","server_name","resumed","last_alert","next_protocol","established","cert_chain_fuids","client_cert_chain_fuids","subject","issuer","client_subject","client_issuer","validation_status"]
+      separator => "	"
+    } #end csv
+    geoip {
+      source => "id.orig_h"
+      add_tag => [ "geoip_orig" ]
+    } #end geoip orig
+    geoip {
+      source => "id.resp_h"
+      add_tag => [ "geoip_resp" ]
+    } #end geoip resp
+    date {
+      match => [ "ts", "UNIX" ]
+      add_tag => [ "tsmatch" ]
+    } #end date
+    if [id.orig_h] == "string" or [id.orig_h] == "uid" {
+      drop {}
+    } #get rid of strange records when file rotation occurs
+  } ####end bro_ssl####
+
+  ####begin bro_traceroute####
+  if "bro_traceroute" in [tags] {
+    csv {
+      columns => ["ts","src","dst","proto"]
+      separator => "	"
+    } #end csv
+    if [proto] == "string" {
+      drop {}
+    } #get rid of strange records when file rotation occurs
+  } ####end bro_traceroute####
+
+ ####begin bro_tunnel####
+ if "bro_tunnel" in [tags] {
+    csv {
+      columns => ["ts","uid","id","tunnel_type","action"]
+      separator => "	"
+    } #end csv
+    date {
+      match => [ "ts", "UNIX" ]
+      add_tag => [ "tsmatch" ]
+    } #end date
+   if [id.orig_h] == "string" or [id.orig_h] == "uid" {
+     drop {}
+   } #get rid of strange records when file rotation occurs
+ } ####end bro_tunnel####
+
+ ####begin bro_weird####
+ if "bro_weird" in [tags] {
+    csv {
+      columns => ["ts","uid","id.orig_h","id.orig_p","id.resp_h","id.resp_p","name","addl","notice","peer"]
+      separator => "	"
+    } #end csv
+    geoip {
+      source => "id.orig_h"
+      add_tag => [ "geoip_orig" ]
+    } #end geoip orig
+    geoip {
+      source => "id.resp_h"
+      add_tag => [ "geoip_resp" ]
+    } #end geoip resp
+    date {
+      match => [ "ts", "UNIX" ]
+      add_tag => [ "tsmatch" ]
+    } #end date
+    if [id.orig_h] == "string" or [id.orig_h] == "uid" {
+      drop {}
+    } #get rid of strange records when file rotation occurs
+ } ####end bro_weird####
+
+  ####begin bro_x509####
+  if "bro_x509" in [tags] {
+    csv {
+      columns => ["ts","id","certificate.version","certificate.serial","certificate.subject","certificate.issuer","certificate.not_valid_before","certificate.not_valid_after","certificate.key_alg","certificate.sig_alg","certificate.key_type","certificate.key_length","certificate.exponent","certificate.curve","san.dns","san.uri","san.email","san.ip","basic_constraints.ca","basic_constraints.path_len"]
+      separator => "	"
+    } #end csv
+    date {
+      match => [ "ts", "UNIX" ]
+      add_tag => [ "tsmatch" ]
+    } #end date
+    if [id] == "ts" or [id] == "time" {
+      drop {}
+    } # get rid of strange records when file rotation occurs
+  } ####end bro_x509####
+
+} #####end filter####

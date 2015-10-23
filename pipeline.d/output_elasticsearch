@@ -1,0 +1,7 @@
+output {
+  elasticsearch {
+    protocol => "http"
+    port => "9200"
+  }
+}
+

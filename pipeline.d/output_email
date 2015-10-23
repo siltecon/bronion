@@ -1,0 +1,19 @@
+output {
+  if [type] == "alert" and "notify" in [tags] {
+    email {
+      body => "Trigggered in: %{message}"
+      subject => "This is a Logstash alert from Snort logs"
+      from => "logstash@blue.local"
+      to => "incident@blue.local"
+      via => "smtp"
+      options => {
+        smtpIporHost => "mail.blue.local"
+        domain => "blue.local"
+        userName => "logstash"
+        password => "secret"
+        authenticationType => "plain"
+        starttls => "true"
+      }
+    }
+  }
+}

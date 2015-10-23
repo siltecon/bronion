@@ -1,0 +1,6 @@
+input {
+  file {
+    path => "/var/log/*memcache*log"
+    type => "memcached"
+  }
+}

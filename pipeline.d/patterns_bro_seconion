@@ -1,0 +1,60 @@
+################################################################################
+# Copyright 2014-2015 Jose Ortiz
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+################################################################################
+# The patterns defined in this file support bro logs received from the security
+# onion sent via syslog-ng
+################################################################################
+BSDDATE %{DATESTAMP}
+TS %{DATA:ts}
+UID %{DATA:uid}
+ORIGH %{DATA:id.orig_h}
+ORIGP %{DATA:id.orig_p}
+RESPH %{DATA:id.resp_h}
+RESPP %{DATA:id.resp_p}
+BROHEADERSO %{TS}\|%{UID}\|%{ORIGH}\|%{ORIGP}\|%{RESPH}\|%{RESPP}
+BROAPPSTATSSO %{TS}\|%{DATA:ts_delta}\|%{DATA:app}\|%{DATA:uniq_hosts}\|%{DATA:hits}\|%{DATA:bytes}
+BROCAPTURELOSSSO %{TS}\|%{DATA:ts_delta}\|%{DATA:peer}\|%{DATA:gaps}\|%{DATA:acks}\|%{DATA:percent_loss}
+BROCOMMUNICATIONSO %{TS}\|%{DATA:peer}\|%{DATA:src_name}\|%{DATA:connected_peer_desc}\|%{DATA:connected_peer_addr}\|%{DATA:connected_peer_port}\|%{DATA:level}\|%{GREEDYDATA:msg}
+BROCONNSO %{BROHEADERSO}\|%{DATA:proto}\|%{DATA:service}\|%{DATA:duration}\|%{DATA:orig_bytes}\|%{DATA:resp_bytes}\|%{DATA:conn_state}\|%{DATA:local_orig}\|%{DATA:missed_bytes}\|%{DATA:history}\|%{DATA:orig_pkts}\|%{DATA:orig_ip_bytes}\|%{DATA:resp_pkts}\|%{DATA:resp_ip_bytes}\|%{DATA:tunnel_parents}\|%{DATA:orig_cc}\|%{DATA:resp_cc}\|%{GREEDYDATA:sensorname}
+BRODHCPSO %{BROHEADERSO}\|%{DATA:mac}\|%{DATA:assigned_ip>}\|%{DATA:lease_time}\|%{GREEDYDATA:trans_id}
+BRODNP3SO %{TS}\|%{UID}\|%{DATA:id}\|%{DATA:fc_request}\|%{DATA:fc_reply}\|%{DATA:iin}
+BRODNSSO %{BROHEADERSO}\|%{DATA:proto}\|%{DATA:trans_id}\|%{DATA:query}\|%{DATA:qclass}\|%{DATA:qclass_name}\|%{DATA:qtype}\|%{DATA:qtype_name}\|%{DATA:rcode}\|%{DATA:rcode_name}\|%{DATA:AA}\|%{DATA:TC}\|%{DATA:RD}\|%{DATA:RA}\|%{DATA:Z}\|%{DATA:answers}\|%{DATA:TTLs}\|%{DATA:rejected}
+BRODPDSO %{BROHEADERSO}\|%{DATA:proto}\|%{DATA:analyzer}\|%{GREEDYDATA:failure_reason}
+BROFILESSO %{TS}\|%{DATA:fuid}\|%{DATA:tx_hosts}\|%{DATA:rx_hosts}\|%{DATA:conn_uids}\|%{DATA:source}\|%{DATA:depth}\|%{DATA:analyzers}\|%{DATA:mime_type}\|%{DATA:filename}\|%{DATA:duration}\|%{DATA:local_orig}\|%{DATA:is_orig}\|%{DATA:seen_bytes}\|%{DATA:total_bytes}\|%{DATA:missing_bytes}\|%{DATA:overflow_bytes}\|%{DATA:timedout}\|%{DATA:parent_fuid}\|%{DATA:md5}\|%{DATA:sha1}\|%{DATA:sha256}\|%{DATA:extracted}
+BROFTPSO %{BROHEADERSO}\|%{DATA:user}\|%{DATA:password}\|%{DATA:command}\|%{DATA:arg}\|%{DATA:mime_type}\|%{DATA:file_size}\|%{DATA:reply_code}\|%{DATA:reply_msg}\|%{DATA:data_channel.passive}\|%{DATA:data_channel.orig_h}\|%{DATA:data_channel.resp_h}\|%{DATA:data_channel.orig_p}\|%{DATA:fuid}
+BROHTTPSO %{BROHEADERSO}\|%{DATA:trans_depth}\|%{DATA:method}\|%{DATA:host}\|%{DATA:uri}\|%{DATA:referrer}\|%{DATA:user_agent}\|%{DATA:request_body_len}\|%{DATA:response_body_len}\|%{DATA:status_code}\|%{DATA:status_msg}\|%{DATA:info_code}\|%{DATA:info_msg}\|%{DATA:filename}\|%{DATA:http.tags}\|%{DATA:username}\|%{DATA:password}\|%{DATA:proxied}\|%{DATA:orig_fuids}\|%{DATA:orig_mime_types}\|%{DATA:resp_fuids}\|%{GREEDYDATA:resp_mime_types}
+BROINTELSO %{TS}\|%{UID}\|%{DATA:id}\|%{DATA:fuid}\|%{DATA:file_mime_type}\|%{DATA:file_desc}\|%{DATA:seen.indicator}\|%{DATA:seen.indicator_type}\|%{DATA:seen.where}\|%{DATA:sources}
+BROIRCSO %{TS}\|%{UID}\|%{DATA:id}\|%{DATA:nick}\|%{DATA:user}\|%{DATA:command}\|%{DATA:value}\|%{DATA:addl}\|%{DATA:dcc_file_name}\|%{DATA:dcc_file_size}\|%{DATA:dcc_mime_type}\|%{DATA:fuid}
+BROKNOWNCERTSSO %{TS}\|%{DATA:host}\|%{DATA:port_num}\|%{DATA:subject}\|%{DATA:issuer_subject}\|%{GREEDYDATA:serial}
+BROKNOWNHOSTSSO %{TS}\|%{DATA:host}
+BROKNOWNSERVICESSO %{TS}\|%{DATA:host}\|%{DATA:port_num}\|%{DATA:port_proto}\|%{GREEDYDATA:service}
+BROMODBUSSO %{TS}\|%{UID}\|%{DATA:id}\|%{DATA:func}\|%{DATA:exception}
+BRONOTICESO %{BROHEADERSO}\|%{DATA:fuid}\|%{DATA:file_mime_type}\|%{DATA:%file_desc}\|%{DATA:proto}\|%{DATA:note}\|%{DATA:msg}\|%{DATA:sub}\|%{DATA:src}\|%{DATA:dst}\|%{DATA:p}\|%{DATA:n}\|%{DATA:peer_descr}\|%{DATA:actions}\|%{DATA:suppress_for}\|%{DATA:dropped}\|%{DATA:remote_location.country_code}\|%{DATA:remote_location.region}\|%{DATA:remote_location.city}\|%{DATA:remote_location.latitude}\|%{GREEDYDATA:remote_location.longitude}
+BRORADIUSSO %{TS}\|%{UID}\|%{DATA:id}\|%{DATA:username}\|%{DATA:mac}\|%{DATA:remote_ip}\|%{DATA:connect_info}\|%{DATA:result}\|%{DATA:logged}
+BROREPORTERSO %{TS}\|%{DATA:level}\|%{DATA:message}\|%{DATA:location}
+BROSMTPSO %{TS}\|%{UID}\|%{DATA:id}\|%{DATA:trans_depth}\|%{DATA:helo}\|%{DATA:mailfrom}\|%{DATA:rcptto}\|%{DATA:date}\|%{DATA:from}\|%{DATA:to}\|%{DATA:reply_to}\|%{DATA:msg_id}\|%{DATA:in_reply_to}\|%{DATA:subject}\|%{DATA:x_originating_ip}\|%{DATA:first_received}\|%{DATA:second_received}\|%{DATA:last_reply}\|%{DATA:path}\|%{DATA:user_agent}\|%{DATA:tls}\|%{DATA:fuids}\|%{DATA:is_webmail}
+BROSNMPSO %{TS}\|%{UID}\|%{DATA:id}\|%{DATA:duration}\|%{DATA:version}\|%{DATA:community}\|%{DATA:get_requests}\|%{DATA:get_bulk_requests}\|%{DATA:get_responses}\|%{DATA:set_requests}\|%{DATA:display_string}\|%{DATA:up_since}
+BROSIGNATURESSO %{TS}\|%{DATA:src_addr}\|%{DATA:src_port}\|%{DATA:dst_addr}\|%{DATA:dst_port}\|%{DATA:note}\|%{DATA:sig_id}\|%{DATA:event_msg}\|%{DATA:sub_msg}\|%{DATA:sig_count}\|%{DATA:host_count}
+BROSOCKSSO %{TS}\|%{UID}\|%{DATA:id}\|%{DATA:version}\|%{DATA:user}\|%{DATA:status}\|%{DATA:request.host}\|%{DATA:request.name}\|%{DATA:request_p}\|%{DATA:bound.host}\|%{DATA:bound.name}\|%{DATA:bound_p}
+BROSOFTWARESO %{TS}\|%{DATA:host}\|%{DATA:host_p}\|%{DATA:software_type}\|%{DATA:name}\|%{DATA:version_major}\|%{DATA:version_minor}\|%{DATA:version_minor2}\|%{DATA:version_minor3}\|%{DATA:version_addl}\|%{GREEDYDATA:unparsed_version}
+BROSSHSO %{TS}\|%{UID}\|%{DATA:id}\|%{DATA:status}\|%{DATA:direction}\|%{DATA:client}\|%{DATA:server}\|%{DATA:resp_size}
+BROSSLSO %{BROHEADERSO}\|%{GREEDYDATA:version}\|%{GREEDYDATA:cipher}\|%{GREEDYDATA:server_name}\|%{GREEDYDATA:session_id}\|%{GREEDYDATA:subject}\|%{GREEDYDATA:issuer_subject}\|%{GREEDYDATA:not_valid_before}\|%{GREEDYDATA:not_valid_after}\|%{GREEDYDATA:last_alert}\|%{GREEDYDATA:client_subject}\|%{GREEDYDATA:client_issuer_subject}\|%{GREEDYDATA:cert_hash}\|%{GREEDYDATA:validation_status}
+BROSYSLOGSO %{TS}\|%{UID}\|%{IPORHOST:srcip}\|%{NUMBER:sport}\|%{IPORHOST:dstip}\|%{NUMBER:dstport}\|%{DATA:protocol}\|%{DATA:facility}\|%{DATA:severity}\|%{BSDDATE:datetime}\|%{DATA:loghost}\|%{GREEDYDATA:logmsg}
+BROTRACEROUTESO %{TS}\|%{DATA:src}\|%{DATA:dst}\|%{DATA:proto}
+BROTUNNELSO %{BROHEADERSO}\|%{DATA:tunnel_type}\|%{DATA:action}
+BROWEIRDSO %{BROHEADERSO}\|%{DATA:name}\|%{DATA:addl}\|%{DATA:notice}\|%{GREEDYDATA:peer}
+BROX509SO %{TS}\|%{DATA:id}\|%{DATA:certificate.version}\|%{DATA:certificate.serial}\|%{DATA:certificate.subject}\|%{DATA:certificate.issuer}\|%{DATA:certificate.not_valid_before}\|%{DATA:certificate.not_valid_after}\|%{DATA:certificate.key_alg}\|%{DATA:certificate.sig_alg}\|%{DATA:certificate.key_type}\|%{DATA:certificate.key_length}\|%{DATA:certificate.exponent}\|%{DATA:certificate.curve}\|%{DATA:san.dns}\|%{DATA:san.uri}\|%{DATA:san.email}\|%{DATA:san.ip}\|%{DATA:basic_constraints.ca}\|%{DATA:basic_constraints.path_len}
+
+BROSYSLOGSO <%{POSINT:syslog_pri}>%{BSDDATE:date} %{DATA:loghost} %{DATA:sourcetype}

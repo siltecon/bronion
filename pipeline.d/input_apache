@@ -1,0 +1,24 @@
+input {
+  file {
+    path => "/var/log/apache2/**.log"
+    type => "apache"
+  }
+}
+
+filter {
+  if [type] == "apache" {
+    if [path] =~ "access" {
+      mutate { replace => { type => "apache_access" } }
+      grok {
+        match => { "message" => "%{COMBINEDAPACHELOG}" }
+      }
+      date {
+        match => [ "timestamp", "dd/MMM/yyyy:HH:mm:ss Z", "dd/MMM/yyyy:HH:mm:ss" ]
+      }
+    } else if [path] =~ "error" {
+      mutate { replace => { type => "apache_error" } }
+    } else {
+      mutate { replace => { type => "apache_other" } }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+input {
+  file {
+    path => "/var/log/nginx/**log"
+    type => "nginx"
+  }
+}
+
+filter {
+  if [type] == "nginx" {
+    if [path] =~ "access" {
+      mutate { replace => { type => "nginx_access" } }
+      grok {
+        match => { "message" => "%{COMBINEDAPACHELOG}" }
+      }
+      date {
+        match => [ "timestamp", "dd/MMM/yyyy:HH:mm:ss Z", "dd/MMM/yyyy:HH:mm:ss" ]
+      }
+    } else if [path] =~ "error" {
+      mutate { replace => { type => "nginx_error" } }
+    } else {
+      mutate { replace => { type => "nginx_other" } }
+    }
+  }
+}

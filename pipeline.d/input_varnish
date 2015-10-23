@@ -1,0 +1,6 @@
+input {
+  file {
+    path => "/var/log/varnish/**"
+    type => "varnish"
+  }
+}

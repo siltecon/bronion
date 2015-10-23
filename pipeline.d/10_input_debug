@@ -1,0 +1,22 @@
+input {
+  generator {
+    message => "[Mon Oct 19 20:12:40.433490 2015] [ssl:warn] [pid 3127] AH01909: kibana4-ssl:443:0 server certificate does NOT include an ID which matches the server name"
+    count => 1
+    type => "debug"
+  }
+}
+
+filter {
+  if [type] == "debug" {
+    grok {
+      patterns_dir => [ "/etc/logstash/patterns.d" ]
+      match => [ "message", "%{GREEDYDATA:catchall}" ]
+    }
+  }
+}
+
+output {
+  stdout {
+    codec => rubydebug
+  }
+}

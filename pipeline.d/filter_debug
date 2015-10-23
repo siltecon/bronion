@@ -1,0 +1,30 @@
+# The purpose of this configuration is to debug filters. Modify the message, filter
+# and run logstash from the command line to watch stdout messages
+#
+# /opt/logstash/bin/logstash -f 00_debug.conf
+#
+
+input {
+  generator {
+    type => "debug"
+    message => '1436804905.249508 C2HRkD4HkEe697Clxj	172.17.104.9	43784	50.31.164.175	80	2	GET	bam.nr-data.net	/1/d0dc94d46c?a=5382633&pl=1436804891215&v=632.2b17625&to=YFMEYhcHX0JWVUNeX1kZK2AmSXleWlN0WF5DRAlaCQNDHn5YU1JI&ap=139&be=198&fe=3683&dc=1672&tt=ACA0A53ADCA55772&f=[]&perf={"timing":{"of":1436804891215,"n":0,"u":149,"ue":149,"dl":158,"di":1833,"ds":1833,"de":1968,"dc":3881,"l":3881,"le":3992,"f":0,"dn":0,"dne":0,"c":0,"ce":0,"rq":2,"rp":147,"rpe":291},"navigation":{}}&jsonp=NREUM.setToken	http://www.elnuevodia.com/	Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36	0	41	200	OK	-	-	-	(empty)	-	-	-	-	-	FpdTFp2bXXm6YVq5Hk	text/plain'
+    count => 1
+  }
+}
+
+filter {
+  if [type] == "debug" {
+    csv {
+      columns => ["ts","uid","id.orig_h","id.orig_p","id.resp_h","id.resp_p","trans_depth","method","host","uri","referrer","user_agent","request_body_len","response_body_len","status_code","status_msg","info_code","info_msg","filename","http.tags","username","password","proxied","orig_fuids","orig_mime_types","resp_fuids","resp_mime_types"]
+      separator => "  "
+    }
+  }
+}
+
+output {
+  stdout {
+    codec => rubydebug{}
+  }
+}
+
+

@@ -1,0 +1,11 @@
+input {
+  file {
+    path => "/var/log/redis/*log"
+    type => "redis"
+  }
+  
+  file {
+    path => "/var/log/redis*log"
+    type => "redis"
+  }
+}

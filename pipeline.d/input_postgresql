@@ -1,0 +1,6 @@
+input {
+  file {
+    path => "/var/lib/postgresql/9.4/main//**log"
+    type => "postgresql"
+  }
+}

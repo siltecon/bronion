@@ -1,0 +1,18 @@
+input {
+  file {
+    path => "/var/log/mysql**"
+    type => "mysql"
+  }
+}
+
+filter {
+  if [type] == "mysql" {
+    if [path] =~ "slow" {
+      mutate { replace => { type => "mysql_slow" } }
+    } else if [path] =~ "error" {
+      mutate { replace => { type => "mysql_error" } }
+    } else {
+      mutate { replace => { type => "mysql_other" } }
+    }
+  }
+}

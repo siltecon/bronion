@@ -1,0 +1,10 @@
+input {
+  file {
+    path => "/var/log/glusterfs/*.log"
+    type => "glusterfs"
+  }
+  file {
+    path => "/var/log/gluster*log"
+    type => "gluster"
+  }
+}
