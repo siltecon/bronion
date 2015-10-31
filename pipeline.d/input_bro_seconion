@@ -17,7 +17,7 @@ input {
   udp {
     type => "syslog"
     port => "5514"
-    tags => [ "brologs" ]
+    tags => [ "securityonion" ]
   }
 }
 
@@ -26,468 +26,726 @@ filter {
     drop { }
 
   # preprocess logs and classify them
-  } else if [type] == "syslog" and "brologs" in [tags] {
+  } else if [type] == "syslog" and "securityonion" in [tags] {
       grok {
-        patterns_dir => [ "/etc/logstash/patterns" ]
-        match => [ "message", '\<%{NUMBER:pri}\>%{BSDDATE:date} %{DATA:loghost} %{DATA:sourcetype}: %{GREEDYDATA:brolog}' ]
-        tag_on_failure => [ "failure" ]
+        match => [ "message", '\<%{NUMBER:syslog_pri}\>%{SYSLOGTIMESTAMP:syslog_timestamp} %{DATA:syslog_host} %{DATA:syslog_program}: %{GREEDYDATA:message}' ]
+        overwrite => [ "message" ]
         break_on_match => "false"
+        add_tag => [ "%{syslog_program}" ]
       } #end grok
+      syslog_pri {}
   } #end if
 
-  ####begin bro_communication####
-  if [sourcetype] == "bro_communication" {
+  # delete bro header data during log rotation
+  if [message] =~ /^#/ {
+    drop { }
+  }
+
+  if [type] == "syslog" and "bro_communication" in [tags] {
     grok {
-      patterns_dir => [ "/etc/logstash/patterns" ]
-      match => { "message" => "%{BROSYSLOGSO}: %{BROCOMMUNICATIONSO}" }
+      patterns_dir => [ "/etc/logstash/patterns.d" ]
+      match => [ "message", "%{BRO_COMMUNICATION}" ]
       add_tag => [ "grokked" ]
-      overwrite => [ "date", "sourcetype" ]
+      remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
-    geoip {
-      source => "id.resp_h"
-      add_tag => [ "geoip" ]
-    } #end geoip
-    syslog_pri {
-      remove_field => [ "loghost", "message", "syslog_pri" ]
-    } # end syslog_pri
-    if [id.orig_h] == "string" or [id.orig_h] == "uid" {
-      drop {}
-    } #get rid of strange records when file rotation occurs
-  } ####end bro_communication####
+    mutate {
+      rename => { "message" => "communication.log"}
+      add_tag => [ "mutated" ]
+    } #end mutate
+    if [id.resp_h] {
+      geoip {
+        source => "id.resp_h"
+        add_tag => [ "geoip" ]
+      } #end geoip
+    } #end if [id.resp_h]
+    if [ts] {
+      date {
+        match => [ "ts", "UNIX" ]
+        add_tag => [ "tsmatch" ]
+      } #end date
+    } #end if [ts]
+  } #end if [type]
 
-  ####begin bro_conn####
-  if [sourcetype] == "bro_conn" {
+  if [type] == "syslog" and "bro_conn" in [tags] {
     grok {
-      patterns_dir => [ "/etc/logstash/patterns" ]
-      match => { "message" => "%{BROSYSLOGSO}: %{BROCONNSO}" }
+      patterns_dir => [ "/etc/logstash/patterns.d" ]
+      match => [ "message", "%{BRO_CONN}" ]
       add_tag => [ "grokked" ]
-      overwrite => [ "date", "sourcetype" ]
+      remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
-    geoip {
-      source => "id.resp_h"
-      add_tag => [ "geoip" ]
-    } #end geoip
-    syslog_pri {
-      remove_field => [ "loghost", "message", "syslog_pri" ]
-    } #end syslog_pri
-    if [id.orig_h] == "string" or [id.orig_h] == "uid" {
-      drop {}
-    } #get rid of strange records when file rotation occurs
-  } ####end bro_conn####
+    mutate {
+      rename => { "message" => "conn.log"}
+      add_tag => [ "mutated" ]
+    } #end mutate
+    if [id.resp_h] {
+      geoip {
+        source => "id.resp_h"
+        add_tag => [ "geoip.resp_h" ]
+      } #end geoip
+    } #end if [id.resp_h]
+    if [id.orig_h] {
+      geoip {
+        source => "id.orig_h"
+        add_tag => [ "geoip.origh" ]
+      } #end geoip
+    } #end if [id.orig_h]
+    if [ts] {
+      date {
+        match => [ "ts", "UNIX" ]
+        add_tag => [ "tsmatch" ]
+      } #end date
+    } #end if [ts]
+  } #end if [type]
 
-  ####begin bro_dhcp####
-  if [sourcetype] == "bro_dhcp" {
+  if [type] == "syslog" and "bro_dhcp" in [tags] {
     grok {
-      patterns_dir => [ "/etc/logstash/patterns" ]
-      match => { "message" => "%{BROSYSLOGSO}: %{BRODHCPSO}" }
+      patterns_dir => [ "/etc/logstash/patterns.d" ]
+      match => [ "message", "%{BRO_DHCP}" ]
       add_tag => [ "grokked" ]
-      overwrite => [ "date", "sourcetype" ]
-      remove_field => [ "loghost", "message", "syslog_pri" ]
+      remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
-    syslog_pri {}
-    if [id.orig_h] == "string" or [id.orig_h] == "uid" {
-      drop {}
-    } #get rid of strange records when file rotation occurs
-  } ####end bro_dhcp####
+    mutate {
+      rename => { "message" => "dhcp.log"}
+      add_tag => [ "mutated" ]
+    } #end mutate
+    if [id.resp_h] {
+      geoip {
+        source => "id.resp_h"
+        add_tag => [ "geoip" ]
+      } #end geoip
+    } #end if [id.resp_h]
+    if [ts] {
+      date {
+        match => [ "ts", "UNIX" ]
+        add_tag => [ "tsmatch" ]
+      } #end date
+    } #end if [ts]
+  } #end if [type]
 
-  ####begin bro_dnp3####
-  if [sourcetype] == "bro_dnp3" {
+  if [type] == "syslog" and "bro_dnp3" in [tags] {
     grok {
-      patterns_dir => [ "/etc/logstash/patterns" ]
-      match => { "message" => "%{BROSYSLOGSO}: %{BRODNP3SO}" }
+      patterns_dir => [ "/etc/logstash/patterns.d" ]
+      match => [ "message", "%{BRO_DNP3}" ]
       add_tag => [ "grokked" ]
-      overwrite => [ "date", "sourcetype" ]
-      remove_field => [ "loghost", "message", "syslog_pri" ]
+      remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
-    syslog_pri {}
-    if [id.orig_h] == "string" or [id.orig_h] == "uid" {
-      drop {}
-    } #get rid of strange records when file rotation occurs
-  } ####end bro_dnp3####
+    mutate {
+      rename => { "message" => "dnp3.log"}
+      add_tag => [ "mutated" ]
+    } #end mutate
+    if [id.resp_h] {
+      geoip {
+        source => "id.resp_h"
+        add_tag => [ "geoip" ]
+      } #end geoip
+    } #end if [id.resp_h]
+    if [ts] {
+      date {
+        match => [ "ts", "UNIX" ]
+        add_tag => [ "tsmatch" ]
+      } #end date
+    } #end if [ts]
+  } #end if [type]
 
-  ####begin bro_dns####
-  if [sourcetype] == "bro_dns" {
+  if [type] == "syslog" and "bro_dns" in [tags] {
     grok {
-      patterns_dir => [ "/etc/logstash/patterns" ]
-      match => { "message" => "%{BROSYSLOGSO}: %{BRODNSSO}" }
+      patterns_dir => [ "/etc/logstash/patterns.d" ]
+      match => [ "message", "%{BRO_DNS}" ]
       add_tag => [ "grokked" ]
-      overwrite => [ "date", "sourcetype" ]
+      remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
-    geoip {
-      source => "id.resp_h"
-      add_tag => [ "geoip" ]
-    } #end geoip
-    syslog_pri {
-      remove_field => [ "loghost", "message", "syslog_pri" ]
-    } #end syslog_pri
-    if [id.orig_h] == "string" or [id.orig_h] == "uid" {
-      drop {}
-    } #get rid of strange records when file rotation occurs
-  } ####end bro_dns####
+    mutate {
+      rename => { "message" => "dns.log"}
+      add_tag => [ "mutated" ]
+    } #end mutate
+    if [id.resp_h] {
+      geoip {
+        source => "id.resp_h"
+        add_tag => [ "geoip" ]
+      } #end geoip
+    } #end if [id.resp_h]
+    if [ts] {
+      date {
+        match => [ "ts", "UNIX" ]
+        add_tag => [ "tsmatch" ]
+      } #end date
+    } #end if [ts]
+  } #end if [type]
 
-  ####begin bro_files####
-  if [sourcetype] == "bro_files" {
+  if [type] == "syslog" and "bro_files" in [tags] {
     grok {
-      patterns_dir => [ "/etc/logstash/patterns" ]
-      match => { "message" => "%{BROSYSLOGSO}: %{BROFILESSO}" }
+      patterns_dir => [ "/etc/logstash/patterns.d" ]
+      match => [ "message", "%{BRO_FILES}" ]
       add_tag => [ "grokked" ]
-      overwrite => [ "date", "sourcetype" ]
+      remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
-    geoip {
-      source => "id.resp_h"
-      add_tag => [ "geoip" ]
-    } #end geoip
-    syslog_pri {
-      remove_field => [ "loghost", "message", "syslog_pri" ]
-    } #end syslog_pri
-    if [md5] == "string" or [md5] == "uid" {
-      drop {}
-    } #get rid of strange records when file rotation occurs
-  } ####end bro_files####
+    mutate {
+      rename => { "message" => "files.log"}
+      add_tag => [ "mutated" ]
+    } #end mutate
+    if [id.resp_h] {
+      geoip {
+        source => "id.resp_h"
+        add_tag => [ "geoip" ]
+      } #end geoip
+    } #end if [id.resp_h]
+    if [ts] {
+      date {
+        match => [ "ts", "UNIX" ]
+        add_tag => [ "tsmatch" ]
+      } #end date
+    } #end if [ts]
+  } #end if [type]
 
-  ####begin bro_ftp####
-  if [sourcetype] == "bro_ftp" {
+  if [type] == "syslog" and "bro_ftp" in [tags] {
     grok {
-      patterns_dir => [ "/etc/logstash/patterns" ]
-      match => { "message" => "%{BROSYSLOGSO}: %{BROFTPSO}" }
+      patterns_dir => [ "/etc/logstash/patterns.d" ]
+      match => [ "message", "%{BRO_FTP}" ]
       add_tag => [ "grokked" ]
-      overwrite => [ "date", "sourcetype" ]
+      remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
-    geoip {
-      source => "id.resp_h"
-      add_tag => [ "geoip" ]
-    } #end geoip
-    syslog_pri {
-      remove_field => [ "loghost", "message", "syslog_pri" ]
-    } #end syslog_pri
-    if [uid] == "ts" or [uid] == "time" {
-      drop {}
-    } #get rid of strange records when file rotation occurs
-  } ####end bro_ftp####
+    mutate {
+      rename => { "message" => "ftp.log"}
+      add_tag => [ "mutated" ]
+    } #end mutate
+    if [id.resp_h] {
+      geoip {
+        source => "id.resp_h"
+        add_tag => [ "geoip" ]
+      } #end geoip
+    } #end if [id.resp_h]
+    if [ts] {
+      date {
+        match => [ "ts", "UNIX" ]
+        add_tag => [ "tsmatch" ]
+      } #end date
+    } #end if [ts]
+  } #end if [type]
 
-  ####begin bro_http####
-  if [sourcetype] == "bro_http" {
+  if [type] == "syslog" and "bro_http" in [tags] {
     grok {
-      patterns_dir => [ "/etc/logstash/patterns" ]
-      match => { "message" => "%{BROSYSLOGSO}: %{BROHTTPSO}" }
+      patterns_dir => [ "/etc/logstash/patterns.d" ]
+      match => [ "message", "%{BRO_HTTP}" ]
       add_tag => [ "grokked" ]
-      overwrite => [ "date", "sourcetype" ]
+      remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
-    geoip {
-      source => "id.resp_h"
-      add_tag => [ "geoip" ]
-    } #end geoip
-    syslog_pri {
-      remove_field => [ "loghost", "message", "syslog_pri" ]
-    } #end syslog_pri
-    if [id.orig_h] == "string" or [id.orig_h] == "uid" {
-      drop {}
-    } #get rid of strange records when file rotation occurs
-  } ####end bro_http####
+    mutate {
+      rename => { "message" => "http.log"}
+      add_tag => [ "mutated" ]
+    } #end mutate
+    if [id.resp_h] {
+      geoip {
+        source => "id.resp_h"
+        add_tag => [ "geoip" ]
+      } #end geoip
+    } #end if [id.resp_h]
+    if [ts] {
+      date {
+        match => [ "ts", "UNIX" ]
+        add_tag => [ "tsmatch" ]
+      } #end date
+    } #end if [ts]
+  } #end if [type]
 
-  ####begin bro_intel####
-  if [sourcetype] == "bro_intel" {
-   grok {
-     patterns_dir => [ "/etc/logstash/patterns" ]
-     match => { "message" => "%{BROSYSLOGSO}: %{BROINTELSO}" }
-     add_tag => [ "grokked" ]
-     overwrite => [ "date", "sourcetype" ]
-     remove_field => [ "loghost", "message", "syslog_pri" ]
-   } #end grok
-   syslog_pri {}
-   if [id.orig_h] == "string" or [id.orig_h] == "uid" {
-     drop {}
-   } #get rid of strange records when file rotation occurs
- } ####end bro_intel####
-
- ####begin bro_irc####
- if [sourcetype] == "bro_irc" {
-   grok {
-     patterns_dir => [ "/etc/logstash/patterns" ]
-     match => { "message" => "%{BROSYSLOGSO}: %{BROIRCSO}" }
-     add_tag => [ "grokked" ]
-     overwrite => [ "date", "sourcetype" ]
-     remove_field => [ "loghost", "message", "syslog_pri" ]
-   } #end grok
-   syslog_pri {}
-   if [id.orig_h] == "string" or [id.orig_h] == "uid" {
-     drop {}
-   } #get rid of strange records when file rotation occurs
- } ####end bro_irc####
-
- ####begin bro_known_certs####
- if [sourcetype] == "bro_known_certs" {
-   grok {
-     patterns_dir => [ "/etc/logstash/patterns" ]
-     match => { "message" => "%{BROSYSLOGSO}: %{BROKNOWNCERTSSO}" }
-     add_tag => [ "grokked" ]
-     overwrite => [ "date", "host", "sourcetype" ]
-     remove_field => [ "loghost", "message", "syslog_pri" ]
-   } #end grok
-   syslog_pri {}
-   if [id.orig_h] == "string" or [id.orig_h] == "uid" {
-     drop {}
-   } #get rid of strange records when file rotation occurs
- } ####end bro_known_certs####
-
- ####begin bro_known_hosts####
- if [sourcetype] == "bro_known_hosts" {
-   grok {
-     patterns_dir => [ "/etc/logstash/patterns" ]
-     match => { "message" => "%{BROSYSLOGSO}: %{BROKNOWNCERTSSO}" }
-     add_tag => [ "grokked" ]
-     overwrite => [ "date", "host", "sourcetype" ]
-     remove_field => [ "loghost", "message", "syslog_pri" ]
-   } #end grok
-   syslog_pri {}
-   if [id.orig_h] == "string" or [id.orig_h] == "uid" {
-     drop {}
-   } #get rid of strange records when file rotation occurs
- } ####end bro_known_hosts####
-
- ####begin bro_known_services
- if [sourcetype] == "bro_known_services" {
-   grok {
-     patterns_dir => [ "/etc/logstash/patterns" ]
-     match => { "message" => "%{BROSYSLOGSO}: %{BROKNOWNSERVICESSO}" }
-     add_tag => [ "grokked" ]
-     overwrite => [ "date", "host", "sourcetype" ]
-     remove_field => [ "loghost", "message", "syslog_pri" ]
-   } #end grok
-   syslog_pri {}
-   if [id.orig_h] == "string" or [id.orig_h] == "uid" {
-     drop {}
-   } #get rid of strange records when file rotation occurs
- } ####end bro_known_services####
-
- ####begin bro_modbus####
- if [sourcetype] == "bro_modbus" {
-   grok {
-     patterns_dir => [ "/etc/logstash/patterns" ]
-     match => { "message" => "%{BROSYSLOGSO}: %{BROMODBUSSO}" }
-     add_tag => [ "grokked" ]
-     overwrite => [ "date", "sourcetype" ]
-     remove_field => [ "loghost", "message", "pri" ]
-   } #end grok
-  if [id.orig_h] == "string" or [id.orig_h] == "uid" {
-    drop {}
-    } #get rid of strange records when file rotation occurs
-  } ####end bro_modbus####
-
-  ####begin bro_notice####
-  if [sourcetype] == "bro_notice" {
+  if [type] == "syslog" and "bro_intel" in [tags] {
     grok {
-      patterns_dir => [ "/etc/logstash/patterns" ]
-      match => { "message" => "%{BROSYSLOGSO}: %{BRONOTICESO}" }
+      patterns_dir => [ "/etc/logstash/patterns.d" ]
+      match => [ "message", "%{BRO_INTEL}" ]
       add_tag => [ "grokked" ]
-      overwrite => [ "date", "sourcetype" ]
-      remove_field => [ "loghost", "message", "pri" ]
+      remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
-    if [id.orig_h] == "string" or [id.orig_h] == "uid" {
-      drop {}
-    } #get rid of strange records when file rotation occurs
-  } ####end bro_notice####
+    mutate {
+      rename => { "message" => "intel.log"}
+      add_tag => [ "mutated" ]
+    } #end mutate
+    if [id.resp_h] {
+      geoip {
+        source => "id.resp_h"
+        add_tag => [ "geoip" ]
+      } #end geoip
+    } #end if [id.resp_h]
+    if [ts] {
+      date {
+        match => [ "ts", "UNIX" ]
+        add_tag => [ "tsmatch" ]
+      } #end date
+    } #end if [ts]
+  } #end if [type]
 
-  ####begin bro_radius####
-  if [sourcetype] == "bro_radius" {
+  if [type] == "syslog" and "bro_irc" in [tags] {
     grok {
-      patterns_dir => [ "/etc/logstash/patterns" ]
-      match => { "message" => "%{BROSYSLOGSO}: %{BRORADIUSSO}" }
+      patterns_dir => [ "/etc/logstash/patterns.d" ]
+      match => [ "message", "%{BRO_IRC}" ]
       add_tag => [ "grokked" ]
-      overwrite => [ "date", "sourcetype" ]
-      remove_field => [ "loghost", "message", "pri" ]
+      remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
-    if [id.orig_h] == "string" or [id.orig_h] == "uid" {
-      drop {}
-    } #get rid of strange records when file rotation occurs
-  } ####end bro_radius####
+    mutate {
+      rename => { "message" => "irc.log"}
+      add_tag => [ "mutated" ]
+    } #end mutate
+    if [id.resp_h] {
+      geoip {
+        source => "id.resp_h"
+        add_tag => [ "geoip" ]
+      } #end geoip
+    } #end if [id.resp_h]
+    if [ts] {
+      date {
+        match => [ "ts", "UNIX" ]
+        add_tag => [ "tsmatch" ]
+      } #end date
+    } #end if [ts]
+  } #end if [type]
 
-  ####begin bro_reporter####
-  if [sourcetype] == "bro_reporter" {
+  if [type] == "syslog" and "bro_known_certs" in [tags] {
     grok {
-      patterns_dir => [ "/etc/logstash/patterns" ]
-      match => { "message" => "%{BROSYSLOGSO}: %{BROREPORTERSO}" }
+      patterns_dir => [ "/etc/logstash/patterns.d" ]
+      match => [ "message", "%{BRO_KNOWNCERTS}" ]
       add_tag => [ "grokked" ]
-      overwrite => [ "date", "sourcetype" ]
-      remove_field => [ "loghost", "message", "pri" ]
+      remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
-    if [id.orig_h] == "string" or [id.orig_h] == "uid" {
-      drop {}
-    } #get rid of strange records when file rotation occurs
-  } ####end bro_reporter####
+    mutate {
+      rename => { "message" => "known_certs.log"}
+      add_tag => [ "mutated" ]
+    } #end mutate
+    if [id.resp_h] {
+      geoip {
+        source => "id.resp_h"
+        add_tag => [ "geoip" ]
+      } #end geoip
+    } #end if [id.resp_h]
+    if [ts] {
+      date {
+        match => [ "ts", "UNIX" ]
+        add_tag => [ "tsmatch" ]
+      } #end date
+    } #end if [ts]
+  } #end if [type]
 
-  ####begin bro_signatures####
-  if [sourcetype] == "bro_signatures" {
+  if [type] == "syslog" and "bro_known_hosts" in [tags] {
     grok {
-      patterns_dir => [ "/etc/logstash/patterns" ]
-      match => { "message" => "%{BROSYSLOGSO}: %{BROSIGNATURESSO}" }
+      patterns_dir => [ "/etc/logstash/patterns.d" ]
+      match => [ "message", "%{BRO_KNOWNHOSTS}" ]
       add_tag => [ "grokked" ]
-      overwrite => [ "date", "sourcetype" ]
-      remove_field => [ "loghost", "message", "syslog_pri" ]
+      remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
-    syslog_pri {}
-    if [id.orig_h] == "string" or [id.orig_h] == "uid" {
-      drop {}
-    } #get rid of strange records when file rotation occurs
-  } ####end bro_signatures####
+    mutate {
+      rename => { "message" => "known_hosts.log"}
+      add_tag => [ "mutated" ]
+    } #end mutate
+    if [id.resp_h] {
+      geoip {
+        source => "id.resp_h"
+        add_tag => [ "geoip" ]
+      } #end geoip
+    } #end if [id.resp_h]
+    if [ts] {
+      date {
+        match => [ "ts", "UNIX" ]
+        add_tag => [ "tsmatch" ]
+      } #end date
+    } #end if [ts]
+  } #end if [type]
 
-  ####begin bro_smtp####
-  if [sourcetype] == "bro_smtp" {
+  if [type] == "syslog" and "bro_known_services" in [tags] {
     grok {
-      patterns_dir => [ "/etc/logstash/patterns" ]
-      match => { "message" => "%{BROSYSLOGSO}: %{BROSMTPSO}" }
+      patterns_dir => [ "/etc/logstash/patterns.d" ]
+      match => [ "message", "%{BRO_KNOWNSERVICES}" ]
       add_tag => [ "grokked" ]
-      overwrite => [ "date", "sourcetype" ]
-      remove_field => [ "loghost", "message", "syslog_pri" ]
+      remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
-    syslog_pri {}
-    if [uid] == "ts" or [uid] == "string" {
-      drop {}
-    } # get rid of strange records when file rotation occurs
-  } ####end bro_smtp####
+    mutate {
+      rename => { "message" => "known_services.log"}
+      add_tag => [ "mutated" ]
+    } #end mutate
+    if [id.resp_h] {
+      geoip {
+        source => "id.resp_h"
+        add_tag => [ "geoip" ]
+      } #end geoip
+    } #end if [id.resp_h]
+    if [ts] {
+      date {
+        match => [ "ts", "UNIX" ]
+        add_tag => [ "tsmatch" ]
+      } #end date
+    } #end if [ts]
+  } #end if [type]
 
-  ####begin bro_snmp####
-  if [sourcetype] == "bro_snmp" {
+  if [type] == "syslog" and "bro_modbus" in [tags] {
     grok {
-      patterns_dir => [ "/etc/logstash/patterns" ]
-      match => { "message" => "%{BROSYSLOGSO}: %{BROSNMPSO}" }
+      patterns_dir => [ "/etc/logstash/patterns.d" ]
+      match => [ "message", "%{BRO_MODBUS}" ]
       add_tag => [ "grokked" ]
-      overwrite => [ "date", "sourcetype" ]
-      remove_field => [ "loghost", "message", "syslog_pri" ]
+      remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
-    syslog_pri {}
-    if [id.orig_h] == "string" or [id.orig_h] == "uid" {
-      drop {}
-    } #get rid of strange records when file rotation occurs
-  } ####end bro_snmp
+    mutate {
+      rename => { "message" => "modbus.log"}
+      add_tag => [ "mutated" ]
+    } #end mutate
+    if [id.resp_h] {
+      geoip {
+        source => "id.resp_h"
+        add_tag => [ "geoip" ]
+      } #end geoip
+    } #end if [id.resp_h]
+    if [ts] {
+      date {
+        match => [ "ts", "UNIX" ]
+        add_tag => [ "tsmatch" ]
+      } #end date
+    } #end if [ts]
+  } #end if [type]
 
-  ####begin bro_socks####
-  if [sourcetype] == "bro_socks" {
+  if [type] == "syslog" and "bro_notice" in [tags] {
     grok {
-      patterns_dir => [ "/etc/logstash/patterns" ]
-      match => { "message" => "%{BROSYSLOGSO}: %{BROSOCKSSO}" }
+      patterns_dir => [ "/etc/logstash/patterns.d" ]
+      match => [ "message", "%{BRO_NOTICE}" ]
       add_tag => [ "grokked" ]
-      overwrite => [ "date", "sourcetype" ]
-      remove_field => [ "loghost", "message", "syslog_pri" ]
+      remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
-    syslog_pri {}
-    if [id.orig_h] == "string" or [id.orig_h] == "uid" {
-      drop {}
-    } #get rid of strange records when file rotation occurs
- } ####begin bro_socks####
+    mutate {
+      rename => { "message" => "notice.log"}
+      add_tag => [ "mutated" ]
+    } #end mutate
+    if [id.resp_h] {
+      geoip {
+        source => "id.resp_h"
+        add_tag => [ "geoip" ]
+      } #end geoip
+    } #end if [id.resp_h]
+    if [ts] {
+      date {
+        match => [ "ts", "UNIX" ]
+        add_tag => [ "tsmatch" ]
+      } #end date
+    } #end if [ts]
+  } #end if [type]
 
- ####begin bro_software####
- if [sourcetype] == "bro_software" {
-   grok {
-     patterns_dir => [ "/etc/logstash/patterns" ]
-     match => { "message" => "%{BROSYSLOGSO}: %{BROSOFTWARESO}" }
-     add_tag => [ "grokked" ]
-     overwrite => [ "date", "host", "sourcetype" ]
-     remove_field => [ "loghost", "message", "syslog_pri" ]
-   } #end grok
-   syslog_pri {}
-   if [host_p] == "addr" or [host_p] == "host" {
-     drop {}
-   } #get rid of strange records when file rotation occurs
- } ####end bro_software####
+  if [type] == "syslog" and "bro_radius" in [tags] {
+    grok {
+      patterns_dir => [ "/etc/logstash/patterns.d" ]
+      match => [ "message", "%{BRO_RADIUS}" ]
+      add_tag => [ "grokked" ]
+      remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
+    } #end grok
+    mutate {
+      rename => { "message" => "radius.log"}
+      add_tag => [ "mutated" ]
+    } #end mutate
+    if [id.resp_h] {
+      geoip {
+        source => "id.resp_h"
+        add_tag => [ "geoip" ]
+      } #end geoip
+    } #end if [id.resp_h]
+    if [ts] {
+      date {
+        match => [ "ts", "UNIX" ]
+        add_tag => [ "tsmatch" ]
+      } #end date
+    } #end if [ts]
+  } #end if [type]
 
- ####begin bro_ssh####
- if [sourcetype] == "bro_ssh" {
-   grok {
-     patterns_dir => [ "/etc/logstash/patterns" ]
-     match => { "message" => "%{BROSYSLOGSO}: %{BROSSHSO}" }
-     add_tag => [ "grokked" ]
-     overwrite => [ "date", "sourcetype" ]
-   } #end grok
-   geoip {
-     source => "id.resp_h"
-     add_tag => [ "geoip" ]
-   } #end geoip
-   syslog_pri {
-     remove_field => [ "loghost", "message", "syslog_pri" ]
-   } #end syslog_pri
-   if [id.orig_h] == "string" or [id.orig_h] == "uid" {
-     drop {}
-   } #get rid of strange records when file rotation occurs
- } ####end bro_ssh####
+  if [type] == "syslog" and "bro_reporter" in [tags] {
+    grok {
+      patterns_dir => [ "/etc/logstash/patterns.d" ]
+      match => [ "message", "%{BRO_REPORTER}" ]
+      add_tag => [ "grokked" ]
+      remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
+    } #end grok
+    mutate {
+      rename => { "message" => "reporter.log"}
+      add_tag => [ "mutated" ]
+    } #end mutate
+    if [id.resp_h] {
+      geoip {
+        source => "id.resp_h"
+        add_tag => [ "geoip" ]
+      } #end geoip
+    } #end if [id.resp_h]
+    if [ts] {
+      date {
+        match => [ "ts", "UNIX" ]
+        add_tag => [ "tsmatch" ]
+      } #end date
+    } #end if [ts]
+  } #end if [type]
 
- if [sourcetype] == "bro_ssl" {
-   grok {
-     patterns_dir => [ "/etc/logstash/patterns" ]
-     match => { "message" => "%{BROSYSLOGSO}: %{BROSSLSO}" }
-     add_tag => [ "grokked" ]
-     overwrite => [ "date", "sourcetype" ]
-   } #end grok
-   geoip {
-     source => "id.resp_h"
-     add_tag => [ "geoip" ]
-   } #end geoip
-   syslog_pri {
-     remove_field => [ "loghost", "message", "syslog_pri" ]
-   } #end syslog_pri
-   if [id.orig_h] == "string" or [id.orig_h] == "uid" {
-     drop {}
-   } #get rid of strange records when file rotation occurs
- } ####end bro_ssl####
+  if [type] == "syslog" and "bro_signatures" in [tags] {
+    grok {
+      patterns_dir => [ "/etc/logstash/patterns.d" ]
+      match => [ "message", "%{BRO_SIGNATURES}" ]
+      add_tag => [ "grokked" ]
+      remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
+    } #end grok
+    mutate {
+      rename => { "message" => "signatures.log"}
+      add_tag => [ "mutated" ]
+    } #end mutate
+    if [id.resp_h] {
+      geoip {
+        source => "id.resp_h"
+        add_tag => [ "geoip" ]
+      } #end geoip
+    } #end if [id.resp_h]
+    if [ts] {
+      date {
+        match => [ "ts", "UNIX" ]
+        add_tag => [ "tsmatch" ]
+      } #end date
+    } #end if [ts]
+  } #end if [type]
 
- ####begin bro_traceroute####
- if [sourcetype] == "bro_traceroute" {
-   grok {
-     patterns_dir => [ "/etc/logstash/patterns" ]
-     match => { "message" => "%{BROSYSLOGSO}: %{BROTRACEROUTESO}" }
-     add_tag => [ "grokked" ]
-     overwrite => [ "date", "sourcetype" ]
-     remove_field => [ "loghost", "message", "syslog_pri" ]
-   } #end grok
-   syslog_pri {}
-   if [id.orig_h] == "string" or [id.orig_h] == "uid" {
-     drop {}
-   } #get rid of strange records when file rotation occurs
- } ####end bro_traceroute####
+  if [type] == "syslog" and "bro_smtp" in [tags] {
+    grok {
+      patterns_dir => [ "/etc/logstash/patterns.d" ]
+      match => [ "message", "%{BRO_SMTP}" ]
+      add_tag => [ "grokked" ]
+      remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
+    } #end grok
+    mutate {
+      rename => { "message" => "smtp.log"}
+      add_tag => [ "mutated" ]
+    } #end mutate
+    if [id.resp_h] {
+      geoip {
+        source => "id.resp_h"
+        add_tag => [ "geoip" ]
+      } #end geoip
+    } #end if [id.resp_h]
+    if [ts] {
+      date {
+        match => [ "ts", "UNIX" ]
+        add_tag => [ "tsmatch" ]
+      } #end date
+    } #end if [ts]
+  } #end if [type]
 
- ####begin bro_tunnels####
- if [sourcetype] == "bro_tunnels" {
-   grok {
-     patterns_dir => [ "/etc/logstash/patterns" ]
-     match => { "message" => "%{BROSYSLOGSO}: %{BROTUNNELSO}" }
-     add_tag => [ "grokked" ]
-     overwrite => [ "date", "sourcetype" ]
-     remove_field => [ "loghost", "message", "syslog_pri" ]
-   } #end grok
-   syslog_pri {}
-   if [id.orig_h] == "string" or [id.orig_h] == "uid" {
-     drop {}
-   } #get rid of strange records when file rotation occurs
- } ####end bro_tunnels####
+  if [type] == "syslog" and "bro_snmp" in [tags] {
+    grok {
+      patterns_dir => [ "/etc/logstash/patterns.d" ]
+      match => [ "message", "%{BRO_SNMP}" ]
+      add_tag => [ "grokked" ]
+      remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
+    } #end grok
+    mutate {
+      rename => { "message" => "snmp.log"}
+      add_tag => [ "mutated" ]
+    } #end mutate
+    if [id.resp_h] {
+      geoip {
+        source => "id.resp_h"
+        add_tag => [ "geoip" ]
+      } #end geoip
+    } #end if [id.resp_h]
+    if [ts] {
+      date {
+        match => [ "ts", "UNIX" ]
+        add_tag => [ "tsmatch" ]
+      } #end date
+    } #end if [ts]
+  } #end if [type]
 
- ####begin bro_weird####
- if [sourcetype] == "bro_weird" {
-   grok {
-     patterns_dir => [ "/etc/logstash/patterns" ]
-     match => { "message" => "%{BROSYSLOGSO}: %{BROWEIRDSO}" }
-     add_tag => [ "grokked" ]
-     overwrite => [ "date", "sourcetype" ]
-     remove_field => [ "loghost", "message", "syslog_pri" ]
-   } #end grok
-   syslog_pri {}
-   if [id.orig_h] == "string" or [id.orig_h] == "uid" {
-     drop {}
-   } #get rid of strange records when file rotation occurs
- } ####end bro_weird####
+  if [type] == "syslog" and "bro_socks" in [tags] {
+    grok {
+      patterns_dir => [ "/etc/logstash/patterns.d" ]
+      match => [ "message", "%{BRO_SOCKS}" ]
+      add_tag => [ "grokked" ]
+      remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
+    } #end grok
+    mutate {
+      rename => { "message" => "socks.log"}
+      add_tag => [ "mutated" ]
+    } #end mutate
+    if [id.resp_h] {
+      geoip {
+        source => "id.resp_h"
+        add_tag => [ "geoip" ]
+      } #end geoip
+    } #end if [id.resp_h]
+    if [ts] {
+      date {
+        match => [ "ts", "UNIX" ]
+        add_tag => [ "tsmatch" ]
+      } #end date
+    } #end if [ts]
+  } #end if [type]
 
- ####begin bro_x509####
- if [sourcetype] == "bro_x509" {
-   grok {
-     patterns_dir => [ "/etc/logstash/patterns" ]
-     match => { "message" => "%{BROSYSLOGSO}: %{BROX509SO}" }
-     add_tag => [ "grokked" ]
-     overwrite => [ "date", "sourcetype" ]
-     remove_field => [ "loghost", "message", "syslog_pri" ]
-   } #end grok
-   syslog_pri {}
-   if [id] == "ts" or [id] == "time" {
-     drop {}
-   } # get rid of strange records when file rotation occurs
- } ####end bro_x509####
+  if [type] == "syslog" and "bro_software" in [tags] {
+    grok {
+      patterns_dir => [ "/etc/logstash/patterns.d" ]
+      match => [ "message", "%{BRO_SOFTWARE}" ]
+      add_tag => [ "grokked" ]
+      remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
+    } #end grok
+    mutate {
+      rename => { "message" => "software.log"}
+      add_tag => [ "mutated" ]
+    } #end mutate
+    if [id.resp_h] {
+      geoip {
+        source => "id.resp_h"
+        add_tag => [ "geoip" ]
+      } #end geoip
+    } #end if [id.resp_h]
+    if [ts] {
+      date {
+        match => [ "ts", "UNIX" ]
+        add_tag => [ "tsmatch" ]
+      } #end date
+    } #end if [ts]
+  } #end if [type]
+
+  if [type] == "syslog" and "bro_ssh" in [tags] {
+    grok {
+      patterns_dir => [ "/etc/logstash/patterns.d" ]
+      match => [ "message", "%{BRO_SSH}" ]
+      add_tag => [ "grokked" ]
+      remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
+    } #end grok
+    mutate {
+      rename => { "message" => "ssh.log"}
+      add_tag => [ "mutated" ]
+    } #end mutate
+    if [id.resp_h] {
+      geoip {
+        source => "id.resp_h"
+        add_tag => [ "geoip" ]
+      } #end geoip
+    } #end if [id.resp_h]
+    if [ts] {
+      date {
+        match => [ "ts", "UNIX" ]
+        add_tag => [ "tsmatch" ]
+      } #end date
+    } #end if [ts]
+  } #end if [type]
+
+  if [type] == "syslog" and "bro_ssl" in [tags] {
+    grok {
+      patterns_dir => [ "/etc/logstash/patterns.d" ]
+      match => [ "message", "%{BRO_SSL}" ]
+      add_tag => [ "grokked" ]
+      remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
+    } #end grok
+    mutate {
+      rename => { "message" => "ssl.log"}
+      add_tag => [ "mutated" ]
+    } #end mutate
+    if [id.resp_h] {
+      geoip {
+        source => "id.resp_h"
+        add_tag => [ "geoip" ]
+      } #end geoip
+    } #end if [id.resp_h]
+    if [ts] {
+      date {
+        match => [ "ts", "UNIX" ]
+        add_tag => [ "tsmatch" ]
+      } #end date
+    } #end if [ts]
+  } #end if [type]
+
+  if [type] == "syslog" and "bro_traceroute" in [tags] {
+    grok {
+      patterns_dir => [ "/etc/logstash/patterns.d" ]
+      match => [ "message", "%{BRO_TRACEROUTE}" ]
+      add_tag => [ "grokked" ]
+      remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
+    } #end grok
+    mutate {
+      rename => { "message" => "traceroute.log"}
+      add_tag => [ "mutated" ]
+    } #end mutate
+    if [id.resp_h] {
+      geoip {
+        source => "id.resp_h"
+        add_tag => [ "geoip" ]
+      } #end geoip
+    } #end if [id.resp_h]
+    if [ts] {
+      date {
+        match => [ "ts", "UNIX" ]
+        add_tag => [ "tsmatch" ]
+      } #end date
+    } #end if [ts]
+  } #end if [type]
+
+  if [type] == "syslog" and "bro_tunnels" in [tags] {
+    grok {
+      patterns_dir => [ "/etc/logstash/patterns.d" ]
+      match => [ "message", "%{BRO_TUNNELS}" ]
+      add_tag => [ "grokked" ]
+      remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
+    } #end grok
+    mutate {
+      rename => { "message" => "tunnels.log"}
+      add_tag => [ "mutated" ]
+    } #end mutate
+    if [id.resp_h] {
+      geoip {
+        source => "id.resp_h"
+        add_tag => [ "geoip" ]
+      } #end geoip
+    } #end if [id.resp_h]
+    if [ts] {
+      date {
+        match => [ "ts", "UNIX" ]
+        add_tag => [ "tsmatch" ]
+      } #end date
+    } #end if [ts]
+  } #end if [type]
+
+  if [type] == "syslog" and "bro_weird" in [tags] {
+    grok {
+      patterns_dir => [ "/etc/logstash/patterns.d" ]
+      match => [ "message", "%{BRO_WEIRD}" ]
+      add_tag => [ "grokked" ]
+      remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
+    } #end grok
+    mutate {
+      rename => { "message" => "weird.log"}
+      add_tag => [ "mutated" ]
+    } #end mutate
+    if [id.resp_h] {
+      geoip {
+        source => "id.resp_h"
+        add_tag => [ "geoip" ]
+      } #end geoip
+    } #end if [id.resp_h]
+    if [ts] {
+      date {
+        match => [ "ts", "UNIX" ]
+        add_tag => [ "tsmatch" ]
+      } #end date
+    } #end if [ts]
+  } #end if [type]
+
+  if [type] == "syslog" and "bro_x509" in [tags] {
+    grok {
+      patterns_dir => [ "/etc/logstash/patterns.d" ]
+      match => [ "message", "%{BRO_X509}" ]
+      add_tag => [ "grokked" ]
+      remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
+    } #end grok
+    mutate {
+      rename => { "message" => "x509.log"}
+      add_tag => [ "mutated" ]
+    } #end mutate
+    if [id.resp_h] {
+      geoip {
+        source => "id.resp_h"
+        add_tag => [ "geoip" ]
+      } #end geoip
+    } #end if [id.resp_h]
+    if [ts] {
+      date {
+        match => [ "ts", "UNIX" ]
+        add_tag => [ "tsmatch" ]
+      } #end date
+    } #end if [ts]
+  } #end if [type]
 
 } #####end filter####
+
