@@ -24,41 +24,42 @@ RESPH %{DATA:id.resp_h}
 RESPP %{DATA:id.resp_p}
 BRO_HEADER %{TS}\t%{UID}\t%{ORIGH}\t%{ORIGP}\t%{RESPH}\t%{RESPP}
 
-BRO_APPSTATS %{TS}\t%{DATA:ts_delta}\t%{DATA:app}\t%{DATA:uniq_hosts}\t%{DATA:hits}\t%{DATA:bytes}\n
-BRO_CAPTURELOSS %{TS}\t%{DATA:ts_delta}\t%{DATA:peer}\t%{DATA:gaps}\t%{DATA:acks}\t%{DATA:percent_loss}\n
-BRO_COMMUNICATION %{TS}\t%{DATA:peer}\t%{DATA:src_name}\t%{DATA:connected_peer_desc}\t%{DATA:connected_peer_addr}\t%{DATA:connected_peer_port}\t%{DATA:level}\t%{DATA:comm.message}\n
-BRO_CONN %{BRO_HEADER}\t%{DATA:proto}\t%{DATA:service}\t%{DATA:duration}\t%{DATA:orig_bytes}\t%{DATA:resp_bytes}\t%{DATA:conn_state}\t%{DATA:local_orig}\t%{DATA:local_resp}\t%{DATA:missed_bytes}\t%{DATA:history}\t%{DATA:orig_pkts}\t%{DATA:orig_ip_bytes}\t%{DATA:resp_pkts}\t%{DATA:resp_ip_bytes}\t%{DATA:tunnel_parents}\t%{DATA:orig_cc}\t%{DATA:resp_cc}\t%{GREEDYDATA:sensorname}\n
-BRO_DHCP %{BRO_HEADER}\t%{DATA:mac}\t%{DATA:assigned_ip>}\t%{DATA:lease_time}\t%{GREEDYDATA:trans_id}\n
-BRO_DNP3 %{TS}\t%{UID}\t%{DATA:id}\t%{DATA:fc_request}\t%{DATA:fc_reply}\t%{DATA:iin}\n
-BRO_DNS %{BRO_HEADER}\t%{DATA:proto}\t%{DATA:trans_id}\t%{DATA:query}\t%{DATA:qclass}\t%{DATA:qclass_name}\t%{DATA:qtype}\t%{DATA:qtype_name}\t%{DATA:rcode}\t%{DATA:rcode_name}\t%{DATA:AA}\t%{DATA:TC}\t%{DATA:RD}\t%{DATA:RA}\t%{DATA:Z}\t%{DATA:answers}\t%{DATA:TTLs}\t%{DATA:rejected}\n
-BRO_DPD %{BRO_HEADER}\t%{DATA:proto}\t%{DATA:analyzer}\t%{GREEDYDATA:failure_reason}\n
-BRO_FILES %{TS}\t%{DATA:fuid}\t%{DATA:tx_hosts}\t%{DATA:rx_hosts}\t%{DATA:conn_uids}\t%{DATA:source}\t%{DATA:depth}\t%{DATA:analyzers}\t%{DATA:mime_type}\t%{DATA:filename}\t%{DATA:duration}\t%{DATA:local_orig}\t%{DATA:is_orig}\t%{DATA:seen_bytes}\t%{DATA:total_bytes}\t%{DATA:missing_bytes}\t%{DATA:overflow_bytes}\t%{DATA:timedout}\t%{DATA:parent_fuid}\t%{DATA:md5}\t%{DATA:sha1}\t%{DATA:sha256}\t%{DATA:extracted}\n
-BRO_FTP %{BRO_HEADER}\t%{DATA:user}\t%{DATA:password}\t%{DATA:command}\t%{DATA:arg}\t%{DATA:mime_type}\t%{DATA:file_size}\t%{DATA:reply_code}\t%{DATA:reply_msg}\t%{DATA:data_channel.passive}\t%{DATA:data_channel.orig_h}\t%{DATA:data_channel.resp_h}\t%{DATA:data_channel.orig_p}\t%{DATA:fuid}\n
-BRO_HTTP %{BRO_HEADER}\t%{DATA:trans_depth}\t%{DATA:method}\t%{DATA:host}\t%{DATA:uri}\t%{DATA:referrer}\t%{DATA:user_agent}\t%{DATA:request_body_len}\t%{DATA:response_body_len}\t%{DATA:status_code}\t%{DATA:status_msg}\t%{DATA:info_code}\t%{DATA:info_msg}\t%{DATA:filename}\t%{DATA:http.tags}\t%{DATA:username}\t%{DATA:password}\t%{DATA:proxied}\t%{DATA:orig_fuids}\t%{DATA:orig_mime_types}\t%{DATA:resp_fuids}\t%{GREEDYDATA:resp_mime_types}\n
-BRO_INTEL %{TS}\t%{UID}\t%{DATA:id}\t%{DATA:fuid}\t%{DATA:file_mime_type}\t%{DATA:file_desc}\t%{DATA:seen.indicator}\t%{DATA:seen.indicator_type}\t%{DATA:seen.where}\t%{DATA:sources}\n
-BRO_IRC %{TS}\t%{UID}\t%{DATA:id}\t%{DATA:nick}\t%{DATA:user}\t%{DATA:command}\t%{DATA:value}\t%{DATA:addl}\t%{DATA:dcc_file_name}\t%{DATA:dcc_file_size}\t%{DATA:dcc_mime_type}\t%{DATA:fuid}\n
+BRO_APPSTATS %{TS}\t%{DATA:ts_delta}\t%{DATA:app}\t%{DATA:uniq_hosts}\t%{DATA:hits}\t%{DATA:bytes}
+BRO_CAPTURELOSS %{TS}\t%{DATA:ts_delta}\t%{DATA:peer}\t%{DATA:gaps}\t%{DATA:acks}\t%{DATA:percent_loss}
+BRO_COMMUNICATION %{TS}\t%{DATA:peer}\t%{DATA:src_name}\t%{DATA:connected_peer_desc}\t%{DATA:connected_peer_addr}\t%{DATA:connected_peer_port}\t%{DATA:level}\t%{DATA:comm.message}
+BRO_CONN %{BRO_HEADER}\t%{DATA:proto}\t%{DATA:service}\t%{DATA:duration}\t%{DATA:orig_bytes}\t%{DATA:resp_bytes}\t%{DATA:conn_state}\t%{DATA:local_orig}\t%{DATA:local_resp}\t%{DATA:missed_bytes}\t%{DATA:history}\t%{DATA:orig_pkts}\t%{DATA:orig_ip_bytes}\t%{DATA:resp_pkts}\t%{DATA:resp_ip_bytes}\t%{DATA:tunnel_parents}\t%{DATA:orig_cc}\t%{DATA:resp_cc}\t%{DATA:sensorname}
+BRO_DHCP %{BRO_HEADER}\t%{DATA:mac}\t%{DATA:assigned_ip>}\t%{DATA:lease_time}\t%{GREEDYDATA:trans_id}
+BRO_DNP3 %{TS}\t%{UID}\t%{DATA:id}\t%{DATA:fc_request}\t%{DATA:fc_reply}\t%{DATA:iin}
+BRO_DNS %{BRO_HEADER}\t%{DATA:proto}\t%{DATA:trans_id}\t%{DATA:query}\t%{DATA:qclass}\t%{DATA:qclass_name}\t%{DATA:qtype}\t%{DATA:qtype_name}\t%{DATA:rcode}\t%{DATA:rcode_name}\t%{DATA:AA}\t%{DATA:TC}\t%{DATA:RD}\t%{DATA:RA}\t%{DATA:Z}\t%{DATA:answers}\t%{DATA:TTLs}\t%{DATA:rejected}
+BRO_DPD %{BRO_HEADER}\t%{DATA:proto}\t%{DATA:analyzer}\t%{GREEDYDATA:failure_reason}
+BRO_FILES %{TS}\t%{DATA:fuid}\t%{DATA:tx_hosts}\t%{DATA:rx_hosts}\t%{DATA:conn_uids}\t%{DATA:source}\t%{DATA:depth}\t%{DATA:analyzers}\t%{DATA:mime_type}\t%{DATA:filename}\t%{DATA:duration}\t%{DATA:local_orig}\t%{DATA:is_orig}\t%{DATA:seen_bytes}\t%{DATA:total_bytes}\t%{DATA:missing_bytes}\t%{DATA:overflow_bytes}\t%{DATA:timedout}\t%{DATA:parent_fuid}\t%{DATA:md5}\t%{DATA:sha1}\t%{DATA:sha256}\t%{DATA:extracted}
+BRO_FTP %{BRO_HEADER}\t%{DATA:user}\t%{DATA:password}\t%{DATA:command}\t%{DATA:arg}\t%{DATA:mime_type}\t%{DATA:file_size}\t%{DATA:reply_code}\t%{DATA:reply_msg}\t%{DATA:data_channel.passive}\t%{DATA:data_channel.orig_h}\t%{DATA:data_channel.resp_h}\t%{DATA:data_channel.orig_p}\t%{DATA:fuid}
+BRO_HTTP %{BRO_HEADER}\t%{DATA:trans_depth}\t%{DATA:method}\t%{DATA:host}\t%{DATA:uri}\t%{DATA:referrer}\t%{DATA:user_agent}\t%{DATA:request_body_len}\t%{DATA:response_body_len}\t%{DATA:status_code}\t%{DATA:status_msg}\t%{DATA:info_code}\t%{DATA:info_msg}\t%{DATA:filename}\t%{DATA:http.tags}\t%{DATA:username}\t%{DATA:password}\t%{DATA:proxied}\t%{DATA:orig_fuids}\t%{DATA:orig_mime_types}\t%{DATA:resp_fuids}\t%{GREEDYDATA:resp_mime_types}
+BRO_INTEL %{TS}\t%{UID}\t%{DATA:id}\t%{DATA:fuid}\t%{DATA:file_mime_type}\t%{DATA:file_desc}\t%{DATA:seen.indicator}\t%{DATA:seen.indicator_type}\t%{DATA:seen.where}\t%{DATA:sources}
+BRO_IRC %{TS}\t%{UID}\t%{DATA:id}\t%{DATA:nick}\t%{DATA:user}\t%{DATA:command}\t%{DATA:value}\t%{DATA:addl}\t%{DATA:dcc_file_name}\t%{DATA:dcc_file_size}\t%{DATA:dcc_mime_type}\t%{DATA:fuid}
 BRO_KERBEROS
-BRO_KNOWNCERTS %{TS}\t%{DATA:host}\t%{DATA:port_num}\t%{DATA:subject}\t%{DATA:issuer_subject}\t%{GREEDYDATA:serial}\n
-BRO_KNOWNHOSTS %{TS}\t%{DATA:host}\n
-BRO_KNOWNSERVICES %{TS}\t%{DATA:host}\t%{DATA:port_num}\t%{DATA:port_proto}\t%{GREEDYDATA:service}\n
-BRO_MODBUS %{TS}\t%{UID}\t%{DATA:id}\t%{DATA:func}\t%{DATA:exception}n
+BRO_KNOWNCERTS %{TS}\t%{DATA:host}\t%{DATA:port_num}\t%{DATA:subject}\t%{DATA:issuer_subject}\t%{GREEDYDATA:serial}
+BRO_KNOWNHOSTS %{TS}\t%{DATA:host}
+BRO_KNOWNSERVICES %{TS}\t%{DATA:host}\t%{DATA:port_num}\t%{DATA:port_proto}\t%{GREEDYDATA:service}
+BRO_MODBUS %{TS}\t%{UID}\t%{DATA:id}\t%{DATA:func}\t%{DATA:exception}
 BRO_MYSQL
-BRO_NOTICE %{BRO_HEADER}\t%{DATA:fuid}\t%{DATA:file_mime_type}\t%{DATA:%file_desc}\t%{DATA:proto}\t%{DATA:note}\t%{DATA:msg}\t%{DATA:sub}\t%{DATA:src}\t%{DATA:dst}\t%{DATA:p}\t%{DATA:n}\t%{DATA:peer_descr}\t%{DATA:actions}\t%{DATA:suppress_for}\t%{DATA:dropped}\t%{DATA:remote_location.country_code}\t%{DATA:remote_location.region}\t%{DATA:remote_location.city}\t%{DATA:remote_location.latitude}\t%{GREEDYDATA:remote_location.longitude}\n
+BRO_NOTICE %{BRO_HEADER}\t%{DATA:fuid}\t%{DATA:file_mime_type}\t%{DATA:%file_desc}\t%{DATA:proto}\t%{DATA:note}\t%{DATA:msg}\t%{DATA:sub}\t%{DATA:src}\t%{DATA:dst}\t%{DATA:p}\t%{DATA:n}\t%{DATA:peer_descr}\t%{DATA:actions}\t%{DATA:suppress_for}\t%{DATA:dropped}\t%{DATA:remote_location.country_code}\t%{DATA:remote_location.region}\t%{DATA:remote_location.city}\t%{DATA:remote_location.latitude}\t%{GREEDYDATA:remote_location.longitude}
 BRO_PE
-BRO_RADIUS %{TS}\t%{UID}\t%{DATA:id}\t%{DATA:username}\t%{DATA:mac}\t%{DATA:remote_ip}\t%{DATA:connect_info}\t%{DATA:result}\t%{DATA:logged}\n
+BRO_RADIUS %{TS}\t%{UID}\t%{DATA:id}\t%{DATA:username}\t%{DATA:mac}\t%{DATA:remote_ip}\t%{DATA:connect_info}\t%{DATA:result}\t%{DATA:logged}
 BRO_RDP
-BRO_REPORTER %{TS}\t%{DATA:level}\t%{DATA:message}\t%{DATA:location}\n
+BRO_REPORTER %{TS}\t%{DATA:level}\t%{DATA:message}\t%{DATA:location}
 BRO_SIP
-BRO_SMTP %{TS}\t%{UID}\t%{DATA:id}\t%{DATA:trans_depth}\t%{DATA:helo}\t%{DATA:mailfrom}\t%{DATA:rcptto}\t%{DATA:date}\t%{DATA:from}\t%{DATA:to}\t%{DATA:reply_to}\t%{DATA:msg_id}\t%{DATA:in_reply_to}\t%{DATA:subject}\t%{DATA:x_originating_ip}\t%{DATA:first_received}\t%{DATA:second_received}\t%{DATA:last_reply}\t%{DATA:path}\t%{DATA:user_agent}\t%{DATA:tls}\t%{DATA:fuids}\t%{DATA:is_webmail}\n
-BRO_SNMP %{TS}\t%{UID}\t%{DATA:id}\t%{DATA:duration}\t%{DATA:version}\t%{DATA:community}\t%{DATA:get_requests}\t%{DATA:get_bulk_requests}\t%{DATA:get_responses}\t%{DATA:set_requests}\t%{DATA:display_string}\t%{DATA:up_since}\n
-BRO_SIGNATURES %{TS}\t%{DATA:src_addr}\t%{DATA:src_port}\t%{DATA:dst_addr}\t%{DATA:dst_port}\t%{DATA:note}\t%{DATA:sig_id}\t%{DATA:event_msg}\t%{DATA:sub_msg}\t%{DATA:sig_count}\t%{DATA:host_count}\n
-BRO_SOCKS %{TS}\t%{UID}\t%{DATA:id}\t%{DATA:version}\t%{DATA:user}\t%{DATA:status}\t%{DATA:request.host}\t%{DATA:request.name}\t%{DATA:request_p}\t%{DATA:bound.host}\t%{DATA:bound.name}\t%{DATA:bound_p}\n
-BRO_SOFTWARE %{TS}\t%{DATA:host}\t%{DATA:host_p}\t%{DATA:software_type}\t%{DATA:name}\t%{DATA:version_major}\t%{DATA:version_minor}\t%{DATA:version_minor2}\t%{DATA:version_minor3}\t%{DATA:version_addl}\t%{GREEDYDATA:unparsed_version}\n
-BRO_SSH %{TS}\t%{UID}\t%{DATA:id}\t%{DATA:status}\t%{DATA:direction}\t%{DATA:client}\t%{DATA:server}\t%{DATA:resp_size}\n
-BRO_SSL %{BRO_HEADER}\t%{GREEDYDATA:version}\t%{GREEDYDATA:cipher}\t%{GREEDYDATA:curve}\t%{GREEDYDATA:server_name}\t%{GREEDYDATA:resumed}\t%{GREEDYDATA:last_alert}\t%{GREEDYDATA:next_protocol}\t%{GREEDYDATA:established}\t%{GREEDYDATA:cert_chain_fuids}\t%{GREEDYDATA:client_cert_chain_fuids}\t%{GREEDYDATA:subject}\t%{GREEDYDATA:issuer}\t%{GREEDYDATA:client_subject}\t%{GREEDYDATA:client_issuer}\t%{GREEDYDATA:validation_status}\n
-BRO_SYSLOG %{TS}\t%{UID}\t%{IPORHOST:srcip}\t%{NUMBER:sport}\t%{IPORHOST:dstip}\t%{NUMBER:dstport}\t%{DATA:protocol}\t%{DATA:facility}\t%{DATA:severity}\t%{BSDDATE:datetime}\t%{DATA:loghost}\t%{GREEDYDATA:logmsg}\n
-BRO_TRACEROUTE %{TS}\t%{DATA:src}\t%{DATA:dst}\t%{DATA:proto}\n
-BRO_TUNNELS %{BRO_HEADER}\t%{DATA:tunnel_type}\t%{DATA:action}\n
+BRO_SMTP %{TS}\t%{UID}\t%{DATA:id}\t%{DATA:trans_depth}\t%{DATA:helo}\t%{DATA:mailfrom}\t%{DATA:rcptto}\t%{DATA:date}\t%{DATA:from}\t%{DATA:to}\t%{DATA:reply_to}\t%{DATA:msg_id}\t%{DATA:in_reply_to}\t%{DATA:subject}\t%{DATA:x_originating_ip}\t%{DATA:first_received}\t%{DATA:second_received}\t%{DATA:last_reply}\t%{DATA:path}\t%{DATA:user_agent}\t%{DATA:tls}\t%{DATA:fuids}\t%{DATA:is_webmail}
+BRO_SNMP %{TS}\t%{UID}\t%{DATA:id}\t%{DATA:duration}\t%{DATA:version}\t%{DATA:community}\t%{DATA:get_requests}\t%{DATA:get_bulk_requests}\t%{DATA:get_responses}\t%{DATA:set_requests}\t%{DATA:display_string}\t%{DATA:up_since}
+BRO_SIGNATURES %{TS}\t%{DATA:src_addr}\t%{DATA:src_port}\t%{DATA:dst_addr}\t%{DATA:dst_port}\t%{DATA:note}\t%{DATA:sig_id}\t%{DATA:event_msg}\t%{DATA:sub_msg}\t%{DATA:sig_count}\t%{DATA:host_count}
+BRO_SOCKS %{TS}\t%{UID}\t%{DATA:id}\t%{DATA:version}\t%{DATA:user}\t%{DATA:status}\t%{DATA:request.host}\t%{DATA:request.name}\t%{DATA:request_p}\t%{DATA:bound.host}\t%{DATA:bound.name}\t%{DATA:bound_p}
+BRO_SOFTWARE %{TS}\t%{DATA:host}\t%{DATA:host_p}\t%{DATA:software_type}\t%{DATA:name}\t%{DATA:version_major}\t%{DATA:version_minor}\t%{DATA:version_minor2}\t%{DATA:version_minor3}\t%{DATA:version_addl}\t%{GREEDYDATA:unparsed_version}
+BRO_SSH %{TS}\t%{UID}\t%{DATA:id}\t%{DATA:status}\t%{DATA:direction}\t%{DATA:client}\t%{DATA:server}\t%{DATA:resp_size}
+BRO_SSL %{BRO_HEADER}\t%{GREEDYDATA:version}\t%{GREEDYDATA:cipher}\t%{GREEDYDATA:curve}\t%{GREEDYDATA:server_name}\t%{GREEDYDATA:resumed}\t%{GREEDYDATA:last_alert}\t%{GREEDYDATA:next_protocol}\t%{GREEDYDATA:established}\t%{GREEDYDATA:cert_chain_fuids}\t%{GREEDYDATA:client_cert_chain_fuids}\t%{GREEDYDATA:subject}\t%{GREEDYDATA:issuer}\t%{GREEDYDATA:client_subject}\t%{GREEDYDATA:client_issuer}\t%{GREEDYDATA:validation_status}
+BRO_SYSLOG %{TS}\t%{UID}\t%{IPORHOST:srcip}\t%{NUMBER:sport}\t%{IPORHOST:dstip}\t%{NUMBER:dstport}\t%{DATA:protocol}\t%{DATA:facility}\t%{DATA:severity}\t%{BSDDATE:datetime}\t%{DATA:loghost}\t%{GREEDYDATA:logmsg}
+BRO_TRACEROUTE %{TS}\t%{DATA:src}\t%{DATA:dst}\t%{DATA:proto}
+BRO_TUNNELS %{BRO_HEADER}\t%{DATA:tunnel_type}\t%{DATA:action}
 BRO_WEIRD %{BRO_HEADER}\t%{DATA:name}\t%{DATA:addl}\t%{DATA:notice}\t%{GREEDYDATA:peer}
-BRO_X509 %{TS}\t%{DATA:id}\t%{DATA:certificate.version}\t%{DATA:certificate.serial}\t%{DATA:certificate.subject}\t%{DATA:certificate.issuer}\t%{DATA:certificate.not_valid_before}\t%{DATA:certificate.not_valid_after}\t%{DATA:certificate.key_alg}\t%{DATA:certificate.sig_alg}\t%{DATA:certificate.key_type}\t%{DATA:certificate.key_length}\t%{DATA:certificate.exponent}\t%{DATA:certificate.curve}\t%{DATA:san.dns}\t%{DATA:san.uri}\t%{DATA:san.email}\t%{DATA:san.ip}\t%{DATA:basic_constraints.ca}\t%{DATA:basic_constraints.path_len}\n
+BRO_X509 %{TS}\t%{DATA:id}\t%{DATA:certificate.version}\t%{DATA:certificate.serial}\t%{DATA:certificate.subject}\t%{DATA:certificate.issuer}\t%{DATA:certificate.not_valid_before}\t%{DATA:certificate.not_valid_after}\t%{DATA:certificate.key_alg}\t%{DATA:certificate.sig_alg}\t%{DATA:certificate.key_type}\t%{DATA:certificate.key_length}\t%{DATA:certificate.exponent}\t%{DATA:certificate.curve}\t%{DATA:san.dns}\t%{DATA:san.uri}\t%{DATA:san.email}\t%{DATA:san.ip}\t%{DATA:basic_constraints.ca}\t%{DATA:basic_constraints.path_len}
 
+SENSORNAME %{DATA:sensorname}

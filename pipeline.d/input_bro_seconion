@@ -15,9 +15,9 @@
 ################################################################################
 input {
   udp {
-    type => "syslog"
+    type => "bro"
     port => "5514"
-    tags => [ "securityonion" ]
+    tags => [ "syslog", "securityonion" ]
   }
 }
 
@@ -26,7 +26,7 @@ filter {
     drop { }
 
   # preprocess logs and classify them
-  } else if [type] == "syslog" and "securityonion" in [tags] {
+  } else if [type] == "bro" and "securityonion" in [tags] {
       grok {
         match => [ "message", '\<%{NUMBER:syslog_pri}\>%{SYSLOGTIMESTAMP:syslog_timestamp} %{DATA:syslog_host} %{DATA:syslog_program}: %{GREEDYDATA:message}' ]
         overwrite => [ "message" ]
@@ -41,10 +41,10 @@ filter {
     drop { }
   }
 
-  if [type] == "syslog" and "bro_communication" in [tags] {
+  if [type] == "bro" and "bro_communication" in [tags] {
     grok {
       patterns_dir => [ "/etc/logstash/patterns.d" ]
-      match => [ "message", "%{BRO_COMMUNICATION}" ]
+      match => [ "message", "%{BRO_COMMUNICATION}\t%{SENSORNAME}\n" ]
       add_tag => [ "grokked" ]
       remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
@@ -66,10 +66,10 @@ filter {
     } #end if [ts]
   } #end if [type]
 
-  if [type] == "syslog" and "bro_conn" in [tags] {
+  if [type] == "bro" and "bro_conn" in [tags] {
     grok {
       patterns_dir => [ "/etc/logstash/patterns.d" ]
-      match => [ "message", "%{BRO_CONN}" ]
+      match => [ "message", "%{BRO_CONN}\t%{SENSORNAME}\n" ]
       add_tag => [ "grokked" ]
       remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
@@ -97,10 +97,10 @@ filter {
     } #end if [ts]
   } #end if [type]
 
-  if [type] == "syslog" and "bro_dhcp" in [tags] {
+  if [type] == "bro" and "bro_dhcp" in [tags] {
     grok {
       patterns_dir => [ "/etc/logstash/patterns.d" ]
-      match => [ "message", "%{BRO_DHCP}" ]
+      match => [ "message", "%{BRO_DHCP}\t%{SENSORNAME}\n" ]
       add_tag => [ "grokked" ]
       remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
@@ -122,10 +122,10 @@ filter {
     } #end if [ts]
   } #end if [type]
 
-  if [type] == "syslog" and "bro_dnp3" in [tags] {
+  if [type] == "bro" and "bro_dnp3" in [tags] {
     grok {
       patterns_dir => [ "/etc/logstash/patterns.d" ]
-      match => [ "message", "%{BRO_DNP3}" ]
+      match => [ "message", "%{BRO_DNP3}\t%{SENSORNAME}\n" ]
       add_tag => [ "grokked" ]
       remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
@@ -147,10 +147,10 @@ filter {
     } #end if [ts]
   } #end if [type]
 
-  if [type] == "syslog" and "bro_dns" in [tags] {
+  if [type] == "bro" and "bro_dns" in [tags] {
     grok {
       patterns_dir => [ "/etc/logstash/patterns.d" ]
-      match => [ "message", "%{BRO_DNS}" ]
+      match => [ "message", "%{BRO_DNS}\t%{SENSORNAME}\n" ]
       add_tag => [ "grokked" ]
       remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
@@ -172,10 +172,10 @@ filter {
     } #end if [ts]
   } #end if [type]
 
-  if [type] == "syslog" and "bro_files" in [tags] {
+  if [type] == "bro" and "bro_files" in [tags] {
     grok {
       patterns_dir => [ "/etc/logstash/patterns.d" ]
-      match => [ "message", "%{BRO_FILES}" ]
+      match => [ "message", "%{BRO_FILES}\t%{SENSORNAME}\n" ]
       add_tag => [ "grokked" ]
       remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
@@ -197,10 +197,10 @@ filter {
     } #end if [ts]
   } #end if [type]
 
-  if [type] == "syslog" and "bro_ftp" in [tags] {
+  if [type] == "bro" and "bro_ftp" in [tags] {
     grok {
       patterns_dir => [ "/etc/logstash/patterns.d" ]
-      match => [ "message", "%{BRO_FTP}" ]
+      match => [ "message", "%{BRO_FTP}\t%{SENSORNAME}\n" ]
       add_tag => [ "grokked" ]
       remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
@@ -222,10 +222,10 @@ filter {
     } #end if [ts]
   } #end if [type]
 
-  if [type] == "syslog" and "bro_http" in [tags] {
+  if [type] == "bro" and "bro_http" in [tags] {
     grok {
       patterns_dir => [ "/etc/logstash/patterns.d" ]
-      match => [ "message", "%{BRO_HTTP}" ]
+      match => [ "message", "%{BRO_HTTP}\t%{SENSORNAME}\n" ]
       add_tag => [ "grokked" ]
       remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
@@ -247,10 +247,10 @@ filter {
     } #end if [ts]
   } #end if [type]
 
-  if [type] == "syslog" and "bro_intel" in [tags] {
+  if [type] == "bro" and "bro_intel" in [tags] {
     grok {
       patterns_dir => [ "/etc/logstash/patterns.d" ]
-      match => [ "message", "%{BRO_INTEL}" ]
+      match => [ "message", "%{BRO_INTEL}\t%{SENSORNAME}\n" ]
       add_tag => [ "grokked" ]
       remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
@@ -272,10 +272,10 @@ filter {
     } #end if [ts]
   } #end if [type]
 
-  if [type] == "syslog" and "bro_irc" in [tags] {
+  if [type] == "bro" and "bro_irc" in [tags] {
     grok {
       patterns_dir => [ "/etc/logstash/patterns.d" ]
-      match => [ "message", "%{BRO_IRC}" ]
+      match => [ "message", "%{BRO_IRC}\t%{SENSORNAME}\n" ]
       add_tag => [ "grokked" ]
       remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
@@ -297,10 +297,10 @@ filter {
     } #end if [ts]
   } #end if [type]
 
-  if [type] == "syslog" and "bro_known_certs" in [tags] {
+  if [type] == "bro" and "bro_known_certs" in [tags] {
     grok {
       patterns_dir => [ "/etc/logstash/patterns.d" ]
-      match => [ "message", "%{BRO_KNOWNCERTS}" ]
+      match => [ "message", "%{BRO_KNOWNCERTS}\t%{SENSORNAME}\n" ]
       add_tag => [ "grokked" ]
       remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
@@ -322,10 +322,10 @@ filter {
     } #end if [ts]
   } #end if [type]
 
-  if [type] == "syslog" and "bro_known_hosts" in [tags] {
+  if [type] == "bro" and "bro_known_hosts" in [tags] {
     grok {
       patterns_dir => [ "/etc/logstash/patterns.d" ]
-      match => [ "message", "%{BRO_KNOWNHOSTS}" ]
+      match => [ "message", "%{BRO_KNOWNHOSTS}\t%{SENSORNAME}\n" ]
       add_tag => [ "grokked" ]
       remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
@@ -347,10 +347,10 @@ filter {
     } #end if [ts]
   } #end if [type]
 
-  if [type] == "syslog" and "bro_known_services" in [tags] {
+  if [type] == "bro" and "bro_known_services" in [tags] {
     grok {
       patterns_dir => [ "/etc/logstash/patterns.d" ]
-      match => [ "message", "%{BRO_KNOWNSERVICES}" ]
+      match => [ "message", "%{BRO_KNOWNSERVICES}\t%{SENSORNAME}\n" ]
       add_tag => [ "grokked" ]
       remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
@@ -372,10 +372,10 @@ filter {
     } #end if [ts]
   } #end if [type]
 
-  if [type] == "syslog" and "bro_modbus" in [tags] {
+  if [type] == "bro" and "bro_modbus" in [tags] {
     grok {
       patterns_dir => [ "/etc/logstash/patterns.d" ]
-      match => [ "message", "%{BRO_MODBUS}" ]
+      match => [ "message", "%{BRO_MODBUS}\t%{SENSORNAME}\n" ]
       add_tag => [ "grokked" ]
       remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
@@ -397,10 +397,10 @@ filter {
     } #end if [ts]
   } #end if [type]
 
-  if [type] == "syslog" and "bro_notice" in [tags] {
+  if [type] == "bro" and "bro_notice" in [tags] {
     grok {
       patterns_dir => [ "/etc/logstash/patterns.d" ]
-      match => [ "message", "%{BRO_NOTICE}" ]
+      match => [ "message", "%{BRO_NOTICE}\t%{SENSORNAME}\n" ]
       add_tag => [ "grokked" ]
       remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
@@ -422,10 +422,10 @@ filter {
     } #end if [ts]
   } #end if [type]
 
-  if [type] == "syslog" and "bro_radius" in [tags] {
+  if [type] == "bro" and "bro_radius" in [tags] {
     grok {
       patterns_dir => [ "/etc/logstash/patterns.d" ]
-      match => [ "message", "%{BRO_RADIUS}" ]
+      match => [ "message", "%{BRO_RADIUS}\t%{SENSORNAME}\n" ]
       add_tag => [ "grokked" ]
       remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
@@ -447,10 +447,10 @@ filter {
     } #end if [ts]
   } #end if [type]
 
-  if [type] == "syslog" and "bro_reporter" in [tags] {
+  if [type] == "bro" and "bro_reporter" in [tags] {
     grok {
       patterns_dir => [ "/etc/logstash/patterns.d" ]
-      match => [ "message", "%{BRO_REPORTER}" ]
+      match => [ "message", "%{BRO_REPORTER}\t%{SENSORNAME}\n" ]
       add_tag => [ "grokked" ]
       remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
@@ -472,10 +472,10 @@ filter {
     } #end if [ts]
   } #end if [type]
 
-  if [type] == "syslog" and "bro_signatures" in [tags] {
+  if [type] == "bro" and "bro_signatures" in [tags] {
     grok {
       patterns_dir => [ "/etc/logstash/patterns.d" ]
-      match => [ "message", "%{BRO_SIGNATURES}" ]
+      match => [ "message", "%{BRO_SIGNATURES}\t%{SENSORNAME}\n" ]
       add_tag => [ "grokked" ]
       remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
@@ -497,10 +497,10 @@ filter {
     } #end if [ts]
   } #end if [type]
 
-  if [type] == "syslog" and "bro_smtp" in [tags] {
+  if [type] == "bro" and "bro_smtp" in [tags] {
     grok {
       patterns_dir => [ "/etc/logstash/patterns.d" ]
-      match => [ "message", "%{BRO_SMTP}" ]
+      match => [ "message", "%{BRO_SMTP}\t%{SENSORNAME}\n" ]
       add_tag => [ "grokked" ]
       remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
@@ -522,10 +522,10 @@ filter {
     } #end if [ts]
   } #end if [type]
 
-  if [type] == "syslog" and "bro_snmp" in [tags] {
+  if [type] == "bro" and "bro_snmp" in [tags] {
     grok {
       patterns_dir => [ "/etc/logstash/patterns.d" ]
-      match => [ "message", "%{BRO_SNMP}" ]
+      match => [ "message", "%{BRO_SNMP}\t%{SENSORNAME}\n" ]
       add_tag => [ "grokked" ]
       remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
@@ -547,10 +547,10 @@ filter {
     } #end if [ts]
   } #end if [type]
 
-  if [type] == "syslog" and "bro_socks" in [tags] {
+  if [type] == "bro" and "bro_socks" in [tags] {
     grok {
       patterns_dir => [ "/etc/logstash/patterns.d" ]
-      match => [ "message", "%{BRO_SOCKS}" ]
+      match => [ "message", "%{BRO_SOCKS}\t%{SENSORNAME}\n" ]
       add_tag => [ "grokked" ]
       remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
@@ -572,10 +572,10 @@ filter {
     } #end if [ts]
   } #end if [type]
 
-  if [type] == "syslog" and "bro_software" in [tags] {
+  if [type] == "bro" and "bro_software" in [tags] {
     grok {
       patterns_dir => [ "/etc/logstash/patterns.d" ]
-      match => [ "message", "%{BRO_SOFTWARE}" ]
+      match => [ "message", "%{BRO_SOFTWARE}\t%{SENSORNAME}\n" ]
       add_tag => [ "grokked" ]
       remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
@@ -597,10 +597,10 @@ filter {
     } #end if [ts]
   } #end if [type]
 
-  if [type] == "syslog" and "bro_ssh" in [tags] {
+  if [type] == "bro" and "bro_ssh" in [tags] {
     grok {
       patterns_dir => [ "/etc/logstash/patterns.d" ]
-      match => [ "message", "%{BRO_SSH}" ]
+      match => [ "message", "%{BRO_SSH}\t%{SENSORNAME}\n" ]
       add_tag => [ "grokked" ]
       remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
@@ -622,10 +622,10 @@ filter {
     } #end if [ts]
   } #end if [type]
 
-  if [type] == "syslog" and "bro_ssl" in [tags] {
+  if [type] == "bro" and "bro_ssl" in [tags] {
     grok {
       patterns_dir => [ "/etc/logstash/patterns.d" ]
-      match => [ "message", "%{BRO_SSL}" ]
+      match => [ "message", "%{BRO_SSL}\t%{SENSORNAME}\n" ]
       add_tag => [ "grokked" ]
       remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
@@ -647,10 +647,10 @@ filter {
     } #end if [ts]
   } #end if [type]
 
-  if [type] == "syslog" and "bro_traceroute" in [tags] {
+  if [type] == "bro" and "bro_traceroute" in [tags] {
     grok {
       patterns_dir => [ "/etc/logstash/patterns.d" ]
-      match => [ "message", "%{BRO_TRACEROUTE}" ]
+      match => [ "message", "%{BRO_TRACEROUTE}\t%{SENSORNAME}\n" ]
       add_tag => [ "grokked" ]
       remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
@@ -672,10 +672,10 @@ filter {
     } #end if [ts]
   } #end if [type]
 
-  if [type] == "syslog" and "bro_tunnels" in [tags] {
+  if [type] == "bro" and "bro_tunnels" in [tags] {
     grok {
       patterns_dir => [ "/etc/logstash/patterns.d" ]
-      match => [ "message", "%{BRO_TUNNELS}" ]
+      match => [ "message", "%{BRO_TUNNELS}\t%{SENSORNAME}\n" ]
       add_tag => [ "grokked" ]
       remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
@@ -697,10 +697,10 @@ filter {
     } #end if [ts]
   } #end if [type]
 
-  if [type] == "syslog" and "bro_weird" in [tags] {
+  if [type] == "bro" and "bro_weird" in [tags] {
     grok {
       patterns_dir => [ "/etc/logstash/patterns.d" ]
-      match => [ "message", "%{BRO_WEIRD}" ]
+      match => [ "message", "%{BRO_WEIRD}\t%{SENSORNAME}\n" ]
       add_tag => [ "grokked" ]
       remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
@@ -722,10 +722,10 @@ filter {
     } #end if [ts]
   } #end if [type]
 
-  if [type] == "syslog" and "bro_x509" in [tags] {
+  if [type] == "bro" and "bro_x509" in [tags] {
     grok {
       patterns_dir => [ "/etc/logstash/patterns.d" ]
-      match => [ "message", "%{BRO_X509}" ]
+      match => [ "message", "%{BRO_X509}\t%{SENSORNAME}\n" ]
       add_tag => [ "grokked" ]
       remove_field => [ "host", "syslog_pri", "syslog_timestamp", "syslog_host", "syslog_program", "syslog_severity_code", "syslog_facility_code", "syslog_severity", "syslog_facility" ]
     } #end grok
